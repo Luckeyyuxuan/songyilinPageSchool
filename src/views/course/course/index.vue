@@ -1,8 +1,8 @@
 <template>
-  <div class="notice-page tech-page tech-grid-bg">
+  <div class="course-page tech-page tech-grid-bg">
     <div class="tech-title">
-      <span class="tech-gradient-text">公告信息管理</span>
-      <span class="tech-subtitle">管理系统公告、通知信息及发布状态</span>
+      <span class="tech-gradient-text">知识课堂管理</span>
+      <span class="tech-subtitle">管理宠物知识课程、学习资料及发布内容</span>
     </div>
 
     <el-card shadow="hover" class="tech-card search-card">
@@ -17,23 +17,23 @@
       <el-form :model="queryParams" ref="queryRef" v-show="showSearch" label-width="90px" class="search-form">
         <el-row :gutter="20">
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
-            <el-form-item label="公告标题" prop="noticeTitle">
+            <el-form-item label="课程标题" prop="courseTitle">
               <el-input
-                v-model="queryParams.noticeTitle"
-                placeholder="请输入公告标题"
+                v-model="queryParams.courseTitle"
+                placeholder="请输入课程标题"
                 clearable
                 @keyup.enter="handleQuery"
                 class="tech-input"
               >
-                <template #prefix><el-icon><Document /></el-icon></template>
+                <template #prefix><el-icon><Reading /></el-icon></template>
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
-            <el-form-item label="公告类型" prop="noticeType">
-              <el-select v-model="queryParams.noticeType" placeholder="请选择公告类型" clearable class="tech-select">
+            <el-form-item label="课程类型" prop="courseType">
+              <el-select v-model="queryParams.courseType" placeholder="请选择课程类型" clearable class="tech-select">
                 <el-option
-                  v-for="dict in gglx"
+                  v-for="dict in courese"
                   :key="dict.value"
                   :label="dict.label"
                   :value="dict.value"
@@ -42,10 +42,10 @@
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
-            <el-form-item label="是否弹窗" prop="isPopup">
-              <el-select v-model="queryParams.isPopup" placeholder="请选择是否弹窗" clearable class="tech-select">
+            <el-form-item label="难度等级" prop="difficultyLevel">
+              <el-select v-model="queryParams.difficultyLevel" placeholder="请选择难度等级" clearable class="tech-select">
                 <el-option
-                  v-for="dict in sftc"
+                  v-for="dict in tyepse"
                   :key="dict.value"
                   :label="dict.label"
                   :value="dict.value"
@@ -54,10 +54,10 @@
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
-            <el-form-item label="发布人ID" prop="publishUserId">
+            <el-form-item label="讲师名称" prop="teacherName">
               <el-input
-                v-model="queryParams.publishUserId"
-                placeholder="请输入发布人ID"
+                v-model="queryParams.teacherName"
+                placeholder="请输入讲师名称"
                 clearable
                 @keyup.enter="handleQuery"
                 class="tech-input"
@@ -77,17 +77,6 @@
               </el-date-picker>
             </el-form-item>
           </el-col>
-          <el-col :xs="24" :sm="12" :md="8" :lg="6">
-            <el-form-item label="下架时间" prop="offlineTime">
-              <el-date-picker clearable
-                v-model="queryParams.offlineTime"
-                type="date"
-                value-format="YYYY-MM-DD"
-                placeholder="请选择下架时间"
-                class="tech-date-picker">
-              </el-date-picker>
-            </el-form-item>
-          </el-col>
           <el-col :xs="24" :sm="24" :md="16" :lg="12">
             <el-form-item>
               <el-button type="primary" icon="Search" @click="handleQuery" class="tech-btn tech-btn-primary">搜索</el-button>
@@ -102,8 +91,8 @@
       <template #header>
         <div class="card-header">
           <span class="section-title">
-            <el-icon class="title-icon"><Bell /></el-icon>
-            公告列表
+            <el-icon class="title-icon"><Collection /></el-icon>
+            课程列表
           </span>
           <div class="header-actions">
             <el-button
@@ -111,16 +100,16 @@
               plain
               icon="Plus"
               @click="handleAdd"
-              v-hasPermi="['NoticeInfo:NoticeInfo:add']"
+              v-hasPermi="['course:course:add']"
               class="tech-btn tech-btn-primary"
-            >新增公告</el-button>
+            >新增课程</el-button>
             <el-button
               type="success"
               plain
               icon="Edit"
               :disabled="single"
               @click="handleUpdate"
-              v-hasPermi="['NoticeInfo:NoticeInfo:edit']"
+              v-hasPermi="['course:course:edit']"
               class="tech-btn tech-btn-success"
             >修改</el-button>
             <el-button
@@ -129,7 +118,7 @@
               icon="Delete"
               :disabled="multiple"
               @click="handleDelete"
-              v-hasPermi="['NoticeInfo:NoticeInfo:remove']"
+              v-hasPermi="['course:course:remove']"
               class="tech-btn tech-btn-danger"
             >删除</el-button>
             <el-button
@@ -137,7 +126,7 @@
               plain
               icon="Download"
               @click="handleExport"
-              v-hasPermi="['NoticeInfo:NoticeInfo:export']"
+              v-hasPermi="['course:course:export']"
               class="tech-btn tech-btn-warning"
             >导出</el-button>
             <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
@@ -145,40 +134,43 @@
         </div>
       </template>
 
-      <el-table v-loading="loading" :data="NoticeInfoList" @selection-change="handleSelectionChange" class="tech-table" stripe>
+      <el-table v-loading="loading" :data="courseList" @selection-change="handleSelectionChange" class="tech-table" stripe>
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="ID" align="center" prop="noticeId" width="80" />
-        <el-table-column label="公告标题" align="center" prop="noticeTitle" min-width="150" show-overflow-tooltip />
-        <el-table-column label="公告类型" align="center" prop="noticeType" width="100">
+        <el-table-column label="课程ID" align="center" prop="courseId" width="80" />
+        <el-table-column label="封面" align="center" width="100">
           <template #default="scope">
-            <el-tag :type="getNoticeTypeColor(scope.row.noticeType)" effect="dark" size="small">
-              <dict-tag :options="gglx" :value="scope.row.noticeType"/>
+            <el-image
+              v-if="scope.row.courseCover"
+              :src="scope.row.courseCover"
+              :preview-src-list="[scope.row.courseCover]"
+              fit="cover"
+              class="course-cover"
+            >
+              <template #error>
+                <div class="image-placeholder">
+                  <el-icon><Picture /></el-icon>
+                </div>
+              </template>
+            </el-image>
+            <div v-else class="image-placeholder">
+              <el-icon><Picture /></el-icon>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="课程标题" align="center" prop="courseTitle" min-width="150" show-overflow-tooltip />
+        <el-table-column label="课程类型" align="center" prop="courseType" width="100">
+          <template #default="scope">
+            <dict-tag :options="courese" :value="scope.row.courseType"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="难度等级" align="center" prop="difficultyLevel" width="100">
+          <template #default="scope">
+            <el-tag :type="getDifficultyType(scope.row.difficultyLevel)" effect="dark" size="small">
+              <dict-tag :options="tyepse" :value="scope.row.difficultyLevel"/>
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="公告内容" align="center" prop="noticeContent" min-width="200" show-overflow-tooltip>
-          <template #default="scope">
-            <div class="notice-content" v-html="scope.row.noticeContent"></div>
-          </template>
-        </el-table-column>
-        <el-table-column label="是否弹窗" align="center" prop="isPopup" width="90">
-          <template #default="scope">
-            <el-tag :type="scope.row.isPopup === '1' ? 'warning' : 'info'" effect="dark" size="small">
-              <dict-tag :options="sftc" :value="scope.row.isPopup"/>
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="发布人ID" align="center" prop="publishUserId" width="100" />
-        <el-table-column label="发布时间" align="center" prop="publishTime" width="160">
-          <template #default="scope">
-            <span class="time-text">{{ parseTime(scope.row.publishTime, '{y}-{m}-{d} {h}:{i}') }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="下架时间" align="center" prop="offlineTime" width="160">
-          <template #default="scope">
-            <span class="time-text">{{ parseTime(scope.row.offlineTime, '{y}-{m}-{d} {h}:{i}') }}</span>
-          </template>
-        </el-table-column>
+        <el-table-column label="讲师名称" align="center" prop="teacherName" width="120" />
         <el-table-column label="查看次数" align="center" prop="viewCount" width="100">
           <template #default="scope">
             <span class="stat-number">
@@ -187,10 +179,23 @@
             </span>
           </template>
         </el-table-column>
+        <el-table-column label="收藏次数" align="center" prop="collectCount" width="100">
+          <template #default="scope">
+            <span class="stat-number collect">
+              <el-icon><Star /></el-icon>
+              {{ scope.row.collectCount || 0 }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column label="发布时间" align="center" prop="publishTime" width="160">
+          <template #default="scope">
+            <span class="time-text">{{ parseTime(scope.row.publishTime, '{y}-{m}-{d} {h}:{i}') }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="180" fixed="right">
           <template #default="scope">
-            <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['NoticeInfo:NoticeInfo:edit']">修改</el-button>
-            <el-button link type="danger" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['NoticeInfo:NoticeInfo:remove']">删除</el-button>
+            <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['course:course:edit']">修改</el-button>
+            <el-button link type="danger" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['course:course:remove']">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -205,18 +210,18 @@
     </el-card>
 
     <el-dialog :title="title" v-model="open" width="700px" append-to-body class="tech-dialog">
-      <el-form ref="NoticeInfoRef" :model="form" :rules="rules" label-width="100px" class="dialog-form">
+      <el-form ref="courseRef" :model="form" :rules="rules" label-width="100px" class="dialog-form">
         <el-row :gutter="20">
           <el-col :span="24">
-            <el-form-item label="公告标题" prop="noticeTitle">
-              <el-input v-model="form.noticeTitle" placeholder="请输入公告标题" class="tech-input" />
+            <el-form-item label="课程标题" prop="courseTitle">
+              <el-input v-model="form.courseTitle" placeholder="请输入课程标题" class="tech-input" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="公告类型" prop="noticeType">
-              <el-select v-model="form.noticeType" placeholder="请选择公告类型" class="tech-select">
+            <el-form-item label="课程类型" prop="courseType">
+              <el-select v-model="form.courseType" placeholder="请选择课程类型" class="tech-select">
                 <el-option
-                  v-for="dict in gglx"
+                  v-for="dict in courese"
                   :key="dict.value"
                   :label="dict.label"
                   :value="parseInt(dict.value)"
@@ -225,10 +230,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="是否弹窗" prop="isPopup">
-              <el-select v-model="form.isPopup" placeholder="请选择是否弹窗" class="tech-select">
+            <el-form-item label="难度等级" prop="difficultyLevel">
+              <el-select v-model="form.difficultyLevel" placeholder="请选择难度等级" class="tech-select">
                 <el-option
-                  v-for="dict in sftc"
+                  v-for="dict in tyepse"
                   :key="dict.value"
                   :label="dict.label"
                   :value="parseInt(dict.value)"
@@ -237,18 +242,33 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="公告内容" prop="noticeContent">
-              <editor v-model="form.noticeContent" :min-height="192"/>
+            <el-form-item label="封面图片URL" prop="courseCover">
+              <el-input v-model="form.courseCover" placeholder="请输入封面图片URL" class="tech-input" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="课程内容" prop="courseContent">
+              <editor v-model="form.courseContent" :min-height="192"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="发布人ID" prop="publishUserId">
-              <el-input v-model="form.publishUserId" placeholder="请输入发布人ID" class="tech-input" />
+            <el-form-item label="讲师名称" prop="teacherName">
+              <el-input v-model="form.teacherName" placeholder="请输入讲师名称" class="tech-input" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="查看次数" prop="viewCount">
               <el-input v-model="form.viewCount" placeholder="请输入查看次数" class="tech-input" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="收藏次数" prop="collectCount">
+              <el-input v-model="form.collectCount" placeholder="请输入收藏次数" class="tech-input" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="发布人" prop="publishUserId">
+              <el-input v-model="form.publishUserId" placeholder="请输入发布人" class="tech-input" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -262,15 +282,9 @@
               </el-date-picker>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="下架时间" prop="offlineTime">
-              <el-date-picker clearable
-                v-model="form.offlineTime"
-                type="date"
-                value-format="YYYY-MM-DD"
-                placeholder="请选择下架时间"
-                class="tech-date-picker">
-              </el-date-picker>
+          <el-col :span="24">
+            <el-form-item label="讲师简介" prop="teacherDesc">
+              <el-input v-model="form.teacherDesc" type="textarea" placeholder="请输入内容" class="tech-textarea" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -285,13 +299,13 @@
   </div>
 </template>
 
-<script setup name="NoticeInfo">
-import { listNoticeInfo, getNoticeInfo, delNoticeInfo, addNoticeInfo, updateNoticeInfo } from "@/api/NoticeInfo/NoticeInfo"
+<script setup name="Course">
+import { listCourse, getCourse, delCourse, addCourse, updateCourse } from "@/api/course/course"
 
 const { proxy } = getCurrentInstance()
-const { ljsc, mbyhlx, gglx, sftc } = proxy.useDict('ljsc', 'mbyhlx', 'gglx', 'sftc')
+const { tyepse, courese, ljsc } = proxy.useDict('tyepse', 'courese', 'ljsc')
 
-const NoticeInfoList = ref([])
+const courseList = ref([])
 const open = ref(false)
 const loading = ref(true)
 const showSearch = ref(true)
@@ -306,32 +320,32 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    noticeTitle: null,
-    noticeType: null,
-    noticeContent: null,
-    targetUserType: null,
-    isPopup: null,
+    courseTitle: null,
+    courseType: null,
+    difficultyLevel: null,
+    courseCover: null,
+    courseContent: null,
+    teacherName: null,
+    teacherDesc: null,
+    viewCount: null,
+    collectCount: null,
+    publishStatus: null,
     publishUserId: null,
     publishTime: null,
-    offlineTime: null,
-    viewCount: null,
     isDeleted: null
   },
   rules: {
-    noticeTitle: [
-      { required: true, message: "公告标题不能为空", trigger: "blur" }
+    courseTitle: [
+      { required: true, message: "课程标题不能为空", trigger: "blur" }
     ],
-    noticeType: [
-      { required: true, message: "公告类型不能为空", trigger: "change" }
+    courseType: [
+      { required: true, message: "课程类型不能为空", trigger: "change" }
     ],
-    noticeContent: [
-      { required: true, message: "公告内容不能为空", trigger: "blur" }
+    courseContent: [
+      { required: true, message: "课程内容不能为空", trigger: "blur" }
     ],
     publishUserId: [
-      { required: true, message: "发布人ID不能为空", trigger: "blur" }
-    ],
-    publishTime: [
-      { required: true, message: "发布时间不能为空", trigger: "blur" }
+      { required: true, message: "发布人不能为空", trigger: "blur" }
     ],
     createTime: [
       { required: true, message: "创建时间不能为空", trigger: "blur" }
@@ -346,8 +360,8 @@ const { queryParams, form, rules } = toRefs(data)
 
 function getList() {
   loading.value = true
-  listNoticeInfo(queryParams.value).then(response => {
-    NoticeInfoList.value = response.rows
+  listCourse(queryParams.value).then(response => {
+    courseList.value = response.rows
     total.value = response.total
     loading.value = false
   })
@@ -360,21 +374,24 @@ function cancel() {
 
 function reset() {
   form.value = {
-    noticeId: null,
-    noticeTitle: null,
-    noticeType: null,
-    noticeContent: null,
-    targetUserType: null,
-    isPopup: null,
+    courseId: null,
+    courseTitle: null,
+    courseType: null,
+    difficultyLevel: null,
+    courseCover: null,
+    courseContent: null,
+    teacherName: null,
+    teacherDesc: null,
+    viewCount: null,
+    collectCount: null,
+    publishStatus: null,
     publishUserId: null,
     publishTime: null,
-    offlineTime: null,
-    viewCount: null,
     createTime: null,
     updateTime: null,
     isDeleted: null
   }
-  proxy.resetForm("NoticeInfoRef")
+  proxy.resetForm("courseRef")
 }
 
 function handleQuery() {
@@ -388,7 +405,7 @@ function resetQuery() {
 }
 
 function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.noticeId)
+  ids.value = selection.map(item => item.courseId)
   single.value = selection.length != 1
   multiple.value = !selection.length
 }
@@ -396,30 +413,30 @@ function handleSelectionChange(selection) {
 function handleAdd() {
   reset()
   open.value = true
-  title.value = "添加公告信息"
+  title.value = "添加知识课堂"
 }
 
 function handleUpdate(row) {
   reset()
-  const _noticeId = row.noticeId || ids.value
-  getNoticeInfo(_noticeId).then(response => {
+  const _courseId = row.courseId || ids.value
+  getCourse(_courseId).then(response => {
     form.value = response.data
     open.value = true
-    title.value = "修改公告信息"
+    title.value = "修改知识课堂"
   })
 }
 
 function submitForm() {
-  proxy.$refs["NoticeInfoRef"].validate(valid => {
+  proxy.$refs["courseRef"].validate(valid => {
     if (valid) {
-      if (form.value.noticeId != null) {
-        updateNoticeInfo(form.value).then(response => {
+      if (form.value.courseId != null) {
+        updateCourse(form.value).then(response => {
           proxy.$modal.msgSuccess("修改成功")
           open.value = false
           getList()
         })
       } else {
-        addNoticeInfo(form.value).then(response => {
+        addCourse(form.value).then(response => {
           proxy.$modal.msgSuccess("新增成功")
           open.value = false
           getList()
@@ -430,9 +447,9 @@ function submitForm() {
 }
 
 function handleDelete(row) {
-  const _noticeIds = row.noticeId || ids.value
-  proxy.$modal.confirm('是否确认删除公告信息编号为"' + _noticeIds + '"的数据项？').then(function() {
-    return delNoticeInfo(_noticeIds)
+  const _courseIds = row.courseId || ids.value
+  proxy.$modal.confirm('是否确认删除知识课堂编号为"' + _courseIds + '"的数据项？').then(function() {
+    return delCourse(_courseIds)
   }).then(() => {
     getList()
     proxy.$modal.msgSuccess("删除成功")
@@ -440,26 +457,25 @@ function handleDelete(row) {
 }
 
 function handleExport() {
-  proxy.download('NoticeInfo/NoticeInfo/export', {
+  proxy.download('course/course/export', {
     ...queryParams.value
-  }, `NoticeInfo_${new Date().getTime()}.xlsx`)
+  }, `course_${new Date().getTime()}.xlsx`)
 }
 
-function getNoticeTypeColor(type) {
-  const colorMap = {
-    '0': 'primary',
-    '1': 'success',
-    '2': 'warning',
-    '3': 'danger'
+function getDifficultyType(level) {
+  const typeMap = {
+    '0': 'success',
+    '1': 'warning',
+    '2': 'danger'
   }
-  return colorMap[type] || 'info'
+  return typeMap[level] || 'info'
 }
 
 getList()
 </script>
 
 <style scoped lang="scss">
-.notice-page {
+.course-page {
   padding: 20px;
   min-height: calc(100vh - 84px);
 }
@@ -691,14 +707,24 @@ getList()
   }
 }
 
-.notice-content {
-  color: #94a3b8;
-  font-size: 12px;
-  line-height: 1.5;
-  
-  :deep(p) {
-    margin: 0;
-  }
+.course-cover {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  border: 2px solid rgba(0, 212, 255, 0.3);
+  object-fit: cover;
+}
+
+.image-placeholder {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  border: 2px dashed rgba(0, 212, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  margin: 0 auto;
 }
 
 .stat-number {
@@ -710,6 +736,10 @@ getList()
   
   .el-icon {
     font-size: 14px;
+  }
+  
+  &.collect {
+    color: #f59e0b;
   }
 }
 
@@ -742,6 +772,22 @@ getList()
 .dialog-form {
   .el-form-item {
     margin-bottom: 18px;
+  }
+}
+
+.tech-textarea {
+  :deep(.el-textarea__inner) {
+    background: rgba(30, 39, 70, 0.6);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    color: #fff;
+    
+    &:focus {
+      border-color: #00d4ff;
+    }
+    
+    &::placeholder {
+      color: #64748b;
+    }
   }
 }
 
