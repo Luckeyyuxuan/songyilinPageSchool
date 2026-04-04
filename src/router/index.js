@@ -83,6 +83,134 @@ export const constantRoutes = [
         meta: { title: '个人中心', icon: 'user' }
       }
     ]
+  },
+  // 领养申请模块
+  {
+    path: '/adoption',
+    component: Layout,
+    meta: { title: '领养申请', icon: 'peoples' },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/adoption/list/index.vue'),
+        name: 'AdoptionList',
+        meta: { title: '申请列表' }
+      },
+      {
+        path: 'application',
+        component: () => import('@/views/adoption/application/index.vue'),
+        name: 'AdoptionApplication',
+        meta: { title: '提交申请' }
+      },
+      {
+        path: 'detail/:id',
+        component: () => import('@/views/adoption/detail/index.vue'),
+        name: 'AdoptionDetail',
+        hidden: true,
+        meta: { title: '申请详情', activeMenu: '/adoption/list' }
+      }
+    ]
+  },
+  // 物资捐赠模块
+  {
+    path: '/donation',
+    component: Layout,
+    meta: { title: '物资捐赠', icon: 'shopping' },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/donation/list/index.vue'),
+        name: 'DonationList',
+        meta: { title: '捐赠列表' }
+      },
+      {
+        path: 'application',
+        component: () => import('@/views/donation/application/index.vue'),
+        name: 'DonationApplication',
+        meta: { title: '提交捐赠' }
+      },
+      {
+        path: 'detail/:id',
+        component: () => import('@/views/donation/detail/index.vue'),
+        name: 'DonationDetail',
+        hidden: true,
+        meta: { title: '捐赠详情', activeMenu: '/donation/list' }
+      }
+    ]
+  },
+  // 故事会模块
+  {
+    path: '/story',
+    component: Layout,
+    meta: { title: '故事会', icon: 'documentation' },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/story/list/index.vue'),
+        name: 'StoryList',
+        meta: { title: '故事列表' }
+      },
+      {
+        path: 'publish',
+        component: () => import('@/views/story/publish/index.vue'),
+        name: 'StoryPublish',
+        meta: { title: '发布故事' }
+      },
+      {
+        path: 'detail/:id',
+        component: () => import('@/views/story/detail/index.vue'),
+        name: 'StoryDetail',
+        hidden: true,
+        meta: { title: '故事详情', activeMenu: '/story/list' }
+      }
+    ]
+  },
+  // 爱心交流社区模块
+  {
+    path: '/community',
+    component: Layout,
+    meta: { title: '爱心交流社区', icon: 'message' },
+    children: [
+      {
+        path: 'post/list',
+        component: () => import('@/views/community/post/list/index.vue'),
+        name: 'PostList',
+        meta: { title: '帖子列表' }
+      },
+      {
+        path: 'post/publish',
+        component: () => import('@/views/community/post/publish/index.vue'),
+        name: 'PostPublish',
+        meta: { title: '发布帖子' }
+      },
+      {
+        path: 'post/detail/:id',
+        component: () => import('@/views/community/post/detail/index.vue'),
+        name: 'PostDetail',
+        hidden: true,
+        meta: { title: '帖子详情', activeMenu: '/community/post/list' }
+      }
+    ]
+  },
+  // 管理员端模块
+  {
+    path: '/admin',
+    component: Layout,
+    meta: { title: '管理员管理', icon: 'system' },
+    children: [
+      {
+        path: 'volunteer',
+        component: () => import('@/views/admin/volunteer/index.vue'),
+        name: 'VolunteerList',
+        meta: { title: '志愿者管理' }
+      },
+      {
+        path: 'organization',
+        component: () => import('@/views/admin/organization/index.vue'),
+        name: 'OrganizationList',
+        meta: { title: '合作机构管理' }
+      }
+    ]
   }
 ]
 

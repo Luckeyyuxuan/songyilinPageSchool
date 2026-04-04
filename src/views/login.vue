@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form">
-      <h3 class="title">若依后台管理系统</h3>
+      <h3 class="title">毛孩子的家</h3>
       <el-form-item prop="username">
         <el-input
           v-model="loginForm.username"
@@ -94,7 +94,7 @@ const loading = ref(false);
 // 验证码开关
 const captchaEnabled = ref(true);
 // 注册开关
-const register = ref(false);
+const register = ref(true);
 const redirect = ref(undefined);
 
 watch(route, (newRoute) => {
@@ -170,28 +170,48 @@ getCookie();
   height: 100%;
   background-image: url("../assets/images/login-background.jpg");
   background-size: cover;
+  background-position: center;
+  backdrop-filter: blur(3px);
 }
 .title {
   margin: 0px auto 30px auto;
   text-align: center;
-  color: #707070;
+  color: #4CAF50;
+  font-size: 28px;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 2px;
 }
 
 .login-form {
-  border-radius: 6px;
-  background: #ffffff;
-  width: 400px;
-  padding: 25px 25px 5px 25px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  width: 420px;
+  padding: 40px 35px 20px 35px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  &:hover {
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+  }
   .el-input {
-    height: 40px;
+    height: 45px;
+    margin-bottom: 5px;
     input {
-      height: 40px;
+      height: 45px;
+      border-radius: 8px;
+      border: 2px solid #f0f0f0;
+      transition: all 0.3s ease;
+      &:focus {
+        border-color: #4CAF50;
+        box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+      }
     }
   }
   .input-icon {
-    height: 39px;
-    width: 14px;
-    margin-left: 0px;
+    height: 44px;
+    width: 20px;
+    margin-left: 5px;
+    color: #999;
   }
 }
 .login-tip {
@@ -200,12 +220,19 @@ getCookie();
   color: #bfbfbf;
 }
 .login-code {
-  width: 33%;
-  height: 40px;
+  width: 35%;
+  height: 45px;
   float: right;
   img {
     cursor: pointer;
     vertical-align: middle;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.2s ease;
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
   }
 }
 .el-login-footer {
@@ -215,13 +242,42 @@ getCookie();
   bottom: 0;
   width: 100%;
   text-align: center;
-  color: #fff;
+  color: rgba(255, 255, 255, 0.9);
   font-family: Arial;
   font-size: 12px;
   letter-spacing: 1px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 .login-code-img {
-  height: 40px;
-  padding-left: 12px;
+  height: 45px;
+  padding-left: 15px;
+  width: 100%;
+  object-fit: cover;
+}
+.el-button {
+  border-radius: 8px;
+  height: 45px;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  transition: all 0.3s ease;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+  }
+  &:active {
+    transform: translateY(0);
+  }
+}
+.el-checkbox {
+  margin-bottom: 20px;
+  .el-checkbox__inner {
+    border-radius: 4px;
+    border: 2px solid #ddd;
+    &:checked {
+      background-color: #4CAF50;
+      border-color: #4CAF50;
+    }
+  }
 }
 </style>

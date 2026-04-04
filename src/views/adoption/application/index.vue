@@ -1,0 +1,656 @@
+<template>
+  <div class="adoption-application tech-page tech-grid-bg">
+    <div class="tech-title">
+      <span class="tech-gradient-text">领养申请</span>
+    </div>
+    
+    <el-card shadow="hover" class="tech-card">
+      <template #header>
+        <div class="card-header">
+          <span class="section-title">
+            <el-icon class="title-icon"><Document /></el-icon>
+            填写申请信息
+          </span>
+        </div>
+      </template>
+      
+      <el-form :model="form" :rules="rules" ref="formRef" label-width="140px" class="tech-form">
+        <!-- 基础居住条件 -->
+        <el-divider content-position="left" class="tech-divider">
+          <span class="divider-content">
+            <el-icon><HomeFilled /></el-icon>
+            基础居住条件
+          </span>
+        </el-divider>
+        
+        <div class="form-section">
+          <el-form-item label="住房类型" prop="housingType">
+            <el-select v-model="form.housingType" placeholder="请选择住房类型" class="tech-select">
+              <el-option label="自有房" value="owned" />
+              <el-option label="租房" value="rented" />
+              <el-option label="宿舍" value="dormitory" />
+            </el-select>
+          </el-form-item>
+          
+          <el-form-item label="是否允许养宠" prop="petAllowed">
+            <el-radio-group v-model="form.petAllowed" class="tech-radio">
+              <el-radio label="是">是</el-radio>
+              <el-radio label="否">否</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          
+          <el-form-item label="封闭阳台/纱窗" prop="hasEnclosedBalcony">
+            <el-radio-group v-model="form.hasEnclosedBalcony" class="tech-radio">
+              <el-radio label="是">是</el-radio>
+              <el-radio label="否">否</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          
+          <el-form-item label="家庭成员同意" prop="familyAgree">
+            <el-radio-group v-model="form.familyAgree" class="tech-radio">
+              <el-radio label="是">是</el-radio>
+              <el-radio label="否">否</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          
+          <el-form-item label="有无过敏情况" prop="hasAllergy">
+            <el-radio-group v-model="form.hasAllergy" class="tech-radio">
+              <el-radio label="有">有</el-radio>
+              <el-radio label="无">无</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </div>
+        
+        <!-- 经济与时间条件 -->
+        <el-divider content-position="left" class="tech-divider">
+          <span class="divider-content">
+            <el-icon><Money /></el-icon>
+            经济与时间条件
+          </span>
+        </el-divider>
+        
+        <div class="form-section">
+          <el-form-item label="工作作息" prop="workSchedule">
+            <el-input 
+              type="textarea" 
+              v-model="form.workSchedule" 
+              placeholder="请描述您的日常工作作息"
+              :rows="3"
+              class="tech-textarea"
+            />
+          </el-form-item>
+          
+          <el-form-item label="每天陪伴时间" prop="companionTime">
+            <el-select v-model="form.companionTime" placeholder="请选择每天陪伴时间" class="tech-select">
+              <el-option label="1小时以下" value="less1" />
+              <el-option label="1-3小时" value="1-3" />
+              <el-option label="3-6小时" value="3-6" />
+              <el-option label="6小时以上" value="more6" />
+            </el-select>
+          </el-form-item>
+          
+          <el-form-item label="了解基础开销" prop="knowBasicCost">
+            <el-radio-group v-model="form.knowBasicCost" class="tech-radio">
+              <el-radio label="是">是</el-radio>
+              <el-radio label="否">否</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          
+          <el-form-item label="承担医疗费用" prop="canAffordMedical">
+            <el-radio-group v-model="form.canAffordMedical" class="tech-radio">
+              <el-radio label="是">是</el-radio>
+              <el-radio label="否">否</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </div>
+        
+        <!-- 喂养养护理念 -->
+        <el-divider content-position="left" class="tech-divider">
+          <span class="divider-content">
+            <el-icon><FirstAidKit /></el-icon>
+            喂养养护理念
+          </span>
+        </el-divider>
+        
+        <div class="form-section">
+          <el-form-item label="科学喂养" prop="scientificFeeding">
+            <el-radio-group v-model="form.scientificFeeding" class="tech-radio">
+              <el-radio label="是">是</el-radio>
+              <el-radio label="否">否</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          
+          <el-form-item label="同意绝育/牵引" prop="agreeSterilization">
+            <el-radio-group v-model="form.agreeSterilization" class="tech-radio">
+              <el-radio label="是">是</el-radio>
+              <el-radio label="否">否</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          
+          <el-form-item label="养宠经验" prop="petExperience">
+            <el-input 
+              type="textarea" 
+              v-model="form.petExperience" 
+              placeholder="请描述您的养宠经验"
+              :rows="4"
+              class="tech-textarea"
+            />
+          </el-form-item>
+        </div>
+        
+        <!-- 长期责任承诺 -->
+        <el-divider content-position="left" class="tech-divider">
+          <span class="divider-content">
+            <el-icon><CircleCheckFilled /></el-icon>
+            长期责任承诺
+          </span>
+        </el-divider>
+        
+        <div class="form-section">
+          <el-form-item label="未来计划" prop="futurePlans">
+            <el-input 
+              type="textarea" 
+              v-model="form.futurePlans" 
+              placeholder="请描述您的未来计划及如何安置宠物"
+              :rows="4"
+              class="tech-textarea"
+            />
+          </el-form-item>
+          
+          <el-form-item label="不随意弃养" prop="noAbandon">
+            <el-radio-group v-model="form.noAbandon" class="tech-radio">
+              <el-radio label="是">是</el-radio>
+              <el-radio label="否">否</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          
+          <el-form-item label="接受回访" prop="acceptVisit">
+            <el-radio-group v-model="form.acceptVisit" class="tech-radio">
+              <el-radio label="是">是</el-radio>
+              <el-radio label="否">否</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </div>
+        
+        <!-- 其他信息 -->
+        <el-divider content-position="left" class="tech-divider">
+          <span class="divider-content">
+            <el-icon><UserFilled /></el-icon>
+            其他信息
+          </span>
+        </el-divider>
+        
+        <div class="form-section">
+          <el-form-item label="申请人姓名" prop="applicantName">
+            <el-input v-model="form.applicantName" placeholder="请输入申请人姓名" class="tech-input">
+              <template #prefix>
+                <el-icon><User /></el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          
+          <el-form-item label="联系电话" prop="contactPhone">
+            <el-input v-model="form.contactPhone" placeholder="请输入联系电话" class="tech-input">
+              <template #prefix>
+                <el-icon><Phone /></el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          
+          <el-form-item label="居住地址" prop="address">
+            <el-input v-model="form.address" placeholder="请输入居住地址" class="tech-input">
+              <template #prefix>
+                <el-icon><Location /></el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          
+          <el-form-item label="上传证明材料">
+            <el-upload
+              class="upload-demo tech-upload"
+              action="#"
+              :on-change="handleFileChange"
+              :auto-upload="false"
+              multiple
+              drag
+            >
+              <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+              <div class="el-upload__text">
+                拖拽文件到此处或 <em>点击上传</em>
+              </div>
+              <template #tip>
+                <div class="el-upload__tip">
+                  请上传经济情况、居住环境等证明材料
+                </div>
+              </template>
+            </el-upload>
+          </el-form-item>
+        </div>
+        
+        <el-form-item class="form-actions">
+          <el-button type="primary" @click="submitForm" class="tech-btn submit-btn">
+            <el-icon><Check /></el-icon>
+            提交申请
+          </el-button>
+          <el-button @click="resetForm" class="reset-btn">
+            <el-icon><RefreshRight /></el-icon>
+            重置
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
+    
+    <!-- 协议下载和上传 -->
+    <el-card shadow="hover" class="tech-card agreement-card">
+      <template #header>
+        <div class="card-header">
+          <span class="section-title">
+            <el-icon class="title-icon"><DocumentChecked /></el-icon>
+            领养协议
+          </span>
+        </div>
+      </template>
+      
+      <div class="agreement-content">
+        <div class="agreement-item">
+          <div class="agreement-info">
+            <el-icon class="agreement-icon"><Download /></el-icon>
+            <div class="agreement-text">
+              <h4>下载协议模板</h4>
+              <p>下载标准的领养协议模板，打印后手动签署</p>
+            </div>
+          </div>
+          <el-button type="info" @click="downloadAgreement" class="tech-btn download-btn">
+            <el-icon><Download /></el-icon>
+            下载模板
+          </el-button>
+        </div>
+        
+        <el-divider class="tech-divider" />
+        
+        <div class="agreement-item">
+          <div class="agreement-info">
+            <el-icon class="agreement-icon"><Upload /></el-icon>
+            <div class="agreement-text">
+              <h4>上传签署协议</h4>
+              <p>上传已签署的协议文件（支持图片或PDF格式）</p>
+            </div>
+          </div>
+          <el-upload
+            class="upload-demo tech-upload"
+            action="#"
+            :on-change="handleAgreementUpload"
+            :auto-upload="false"
+            accept=".jpg,.jpeg,.png,.pdf"
+          >
+            <el-button type="primary" class="tech-btn upload-btn">
+              <el-icon><Upload /></el-icon>
+              上传协议
+            </el-button>
+          </el-upload>
+        </div>
+      </div>
+    </el-card>
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive } from 'vue'
+import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
+import { submitAdoptionApplication, downloadAgreementTemplate } from '@/api/adoption/application'
+import { 
+  Document, 
+  HomeFilled, 
+  Money, 
+  FirstAidKit, 
+  CircleCheckFilled, 
+  UserFilled,
+  User,
+  Phone,
+  Location,
+  UploadFilled,
+  Check,
+  RefreshRight,
+  DocumentChecked,
+  Download,
+  Upload
+} from '@element-plus/icons-vue'
+
+const router = useRouter()
+const formRef = ref()
+const form = reactive({
+  housingType: '',
+  petAllowed: '',
+  hasEnclosedBalcony: '',
+  familyAgree: '',
+  hasAllergy: '',
+  workSchedule: '',
+  companionTime: '',
+  knowBasicCost: '',
+  canAffordMedical: '',
+  scientificFeeding: '',
+  agreeSterilization: '',
+  petExperience: '',
+  futurePlans: '',
+  noAbandon: '',
+  acceptVisit: '',
+  applicantName: '',
+  contactPhone: '',
+  address: '',
+  files: []
+})
+
+const rules = {
+  housingType: [{ required: true, message: '请选择住房类型', trigger: 'change' }],
+  petAllowed: [{ required: true, message: '请选择是否允许养宠', trigger: 'change' }],
+  hasEnclosedBalcony: [{ required: true, message: '请选择是否有封闭阳台/纱窗', trigger: 'change' }],
+  familyAgree: [{ required: true, message: '请选择家庭成员是否同意', trigger: 'change' }],
+  workSchedule: [{ required: true, message: '请描述工作作息', trigger: 'blur' }],
+  companionTime: [{ required: true, message: '请选择每天陪伴时间', trigger: 'change' }],
+  knowBasicCost: [{ required: true, message: '请选择是否了解基础开销', trigger: 'change' }],
+  canAffordMedical: [{ required: true, message: '请选择是否能承担医疗费用', trigger: 'change' }],
+  scientificFeeding: [{ required: true, message: '请选择是否接受科学喂养', trigger: 'change' }],
+  agreeSterilization: [{ required: true, message: '请选择是否同意绝育/牵引', trigger: 'change' }],
+  noAbandon: [{ required: true, message: '请选择是否承诺不随意弃养', trigger: 'change' }],
+  acceptVisit: [{ required: true, message: '请选择是否接受回访', trigger: 'change' }],
+  applicantName: [{ required: true, message: '请输入申请人姓名', trigger: 'blur' }],
+  contactPhone: [{ required: true, message: '请输入联系电话', trigger: 'blur' }],
+  address: [{ required: true, message: '请输入居住地址', trigger: 'blur' }]
+}
+
+const handleFileChange = (file) => {
+  form.files.push(file)
+}
+
+const handleAgreementUpload = (file) => {
+  form.agreementFile = file
+}
+
+const submitForm = async () => {
+  if (!formRef.value) return
+  await formRef.value.validate(async (valid) => {
+    if (valid) {
+      try {
+        const response = await submitAdoptionApplication(form)
+        ElMessage.success('申请提交成功')
+        router.push('/adoption/list')
+      } catch (error) {
+        ElMessage.error('申请提交失败')
+      }
+    }
+  })
+}
+
+const resetForm = () => {
+  if (!formRef.value) return
+  formRef.value.resetFields()
+  form.files = []
+  form.agreementFile = null
+}
+
+const downloadAgreement = async () => {
+  try {
+    await downloadAgreementTemplate()
+  } catch (error) {
+    ElMessage.error('下载失败')
+  }
+}
+</script>
+
+<style scoped lang="scss">
+@import '@/assets/styles/tech-theme.scss';
+
+.adoption-application {
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.tech-title {
+  margin-bottom: 24px;
+  
+  .tech-gradient-text {
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+.tech-card {
+  margin-bottom: 24px;
+  
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--tech-text-primary);
+      
+      .title-icon {
+        color: var(--tech-primary);
+        font-size: 20px;
+      }
+    }
+  }
+}
+
+.tech-divider {
+  margin: 32px 0 24px 0;
+  
+  .divider-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--tech-primary);
+    
+    .el-icon {
+      font-size: 18px;
+    }
+  }
+}
+
+.form-section {
+  padding: 0 16px;
+}
+
+.tech-form {
+  .el-form-item {
+    margin-bottom: 20px;
+  }
+  
+  .el-form-item__label {
+    color: var(--tech-text-secondary);
+    font-weight: 500;
+  }
+  
+  .tech-input,
+  .tech-select,
+  .tech-textarea {
+    :deep(.el-input__wrapper),
+    :deep(.el-textarea__inner) {
+      background: var(--tech-bg-light);
+      border: 1px solid var(--tech-border);
+      border-radius: 8px;
+      color: var(--tech-text-primary);
+      
+      &:focus {
+        border-color: var(--tech-primary);
+        box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+      }
+    }
+    
+    :deep(.el-input__prefix) {
+      color: var(--tech-primary);
+    }
+  }
+  
+  .tech-radio {
+    :deep(.el-radio__input.is-checked .el-radio__inner) {
+      background: var(--tech-primary);
+      border-color: var(--tech-primary);
+    }
+    
+    :deep(.el-radio__label) {
+      color: var(--tech-text-secondary);
+    }
+  }
+}
+
+.tech-upload {
+  :deep(.el-upload-dragger) {
+    background: var(--tech-bg-light);
+    border: 2px dashed var(--tech-border);
+    border-radius: 12px;
+    
+    &:hover {
+      border-color: var(--tech-primary);
+    }
+    
+    .el-icon--upload {
+      font-size: 48px;
+      color: var(--tech-primary);
+    }
+    
+    .el-upload__text {
+      color: var(--tech-text-secondary);
+      
+      em {
+        color: var(--tech-primary);
+      }
+    }
+  }
+}
+
+.form-actions {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--tech-border);
+  
+  .submit-btn {
+    background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+    border: none;
+    padding: 12px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    
+    &:hover {
+      box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+    }
+  }
+  
+  .reset-btn {
+    background: transparent;
+    border: 1px solid var(--tech-border);
+    color: var(--tech-text-secondary);
+    padding: 12px 24px;
+    
+    &:hover {
+      border-color: var(--tech-primary);
+      color: var(--tech-primary);
+    }
+  }
+}
+
+.agreement-card {
+  .agreement-content {
+    padding: 16px;
+  }
+  
+  .agreement-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: var(--tech-bg-light);
+    border-radius: 12px;
+    border: 1px solid var(--tech-border);
+    
+    .agreement-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      
+      .agreement-icon {
+        font-size: 32px;
+        color: var(--tech-primary);
+      }
+      
+      .agreement-text {
+        h4 {
+          margin: 0 0 4px 0;
+          color: var(--tech-text-primary);
+          font-size: 16px;
+        }
+        
+        p {
+          margin: 0;
+          color: var(--tech-text-muted);
+          font-size: 14px;
+        }
+      }
+    }
+    
+    .tech-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      
+      &.download-btn {
+        background: var(--tech-bg-hover);
+        border: 1px solid var(--tech-border);
+        color: var(--tech-text-secondary);
+        
+        &:hover {
+          border-color: var(--tech-primary);
+          color: var(--tech-primary);
+        }
+      }
+      
+      &.upload-btn {
+        background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+        border: none;
+        
+        &:hover {
+          box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .adoption-application {
+    padding: 16px;
+  }
+  
+  .tech-title .tech-gradient-text {
+    font-size: 24px;
+  }
+  
+  .form-section {
+    padding: 0;
+  }
+  
+  .agreement-item {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+    
+    .agreement-info {
+      flex-direction: column;
+    }
+  }
+}
+</style>

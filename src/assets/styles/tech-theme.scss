@@ -1,0 +1,991 @@
+// 科技质感主题样式
+:root {
+  // 主色调 - 科技蓝
+  --tech-primary: #00d4ff;
+  --tech-primary-dark: #0099cc;
+  --tech-primary-light: #66e5ff;
+  
+  // 辅助色
+  --tech-secondary: #7c3aed;
+  --tech-success: #10b981;
+  --tech-warning: #f59e0b;
+  --tech-danger: #ef4444;
+  
+  // 背景色
+  --tech-bg-dark: #0a0e27;
+  --tech-bg-card: #111936;
+  --tech-bg-hover: #1a2342;
+  --tech-bg-light: #1e2746;
+  
+  // 文字颜色
+  --tech-text-primary: #ffffff;
+  --tech-text-secondary: #94a3b8;
+  --tech-text-muted: #64748b;
+  
+  // 边框颜色
+  --tech-border: rgba(0, 212, 255, 0.2);
+  --tech-border-glow: rgba(0, 212, 255, 0.5);
+  
+  // 渐变
+  --tech-gradient-primary: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+  --tech-gradient-dark: linear-gradient(180deg, #0a0e27 0%, #111936 100%);
+  --tech-gradient-glow: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.3), transparent);
+  
+  // 阴影
+  --tech-shadow-sm: 0 2px 8px rgba(0, 212, 255, 0.1);
+  --tech-shadow-md: 0 4px 20px rgba(0, 212, 255, 0.15);
+  --tech-shadow-lg: 0 8px 40px rgba(0, 212, 255, 0.2);
+  --tech-shadow-glow: 0 0 30px rgba(0, 212, 255, 0.3);
+}
+
+// 科技卡片样式
+.tech-card {
+  background: var(--tech-bg-card);
+  border: 1px solid var(--tech-border);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--tech-gradient-primary);
+    opacity: 0.8;
+  }
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  
+  &:hover {
+    border-color: var(--tech-border-glow);
+    box-shadow: var(--tech-shadow-md);
+    transform: translateY(-2px);
+  }
+}
+
+// 科技按钮样式
+.tech-btn {
+  background: var(--tech-gradient-primary);
+  border: none;
+  color: white;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+  
+  &:hover {
+    box-shadow: var(--tech-shadow-glow);
+    transform: translateY(-1px);
+    
+    &::before {
+      left: 100%;
+    }
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// 科技输入框样式
+.tech-input {
+  background: var(--tech-bg-light);
+  border: 1px solid var(--tech-border);
+  border-radius: 8px;
+  color: var(--tech-text-primary);
+  transition: all 0.3s ease;
+  
+  &:focus {
+    border-color: var(--tech-primary);
+    box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+    outline: none;
+  }
+  
+  &::placeholder {
+    color: var(--tech-text-muted);
+  }
+}
+
+// 科技表格样式
+.tech-table {
+  background: transparent;
+  
+  .el-table__header {
+    background: var(--tech-bg-light);
+    
+    th {
+      background: var(--tech-bg-light);
+      color: var(--tech-primary);
+      font-weight: 600;
+      border-bottom: 1px solid var(--tech-border);
+    }
+  }
+  
+  .el-table__body {
+    tr {
+      background: var(--tech-bg-card);
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background: var(--tech-bg-hover);
+      }
+      
+      td {
+        color: var(--tech-text-secondary);
+        border-bottom: 1px solid var(--tech-border);
+      }
+    }
+  }
+}
+
+// 科技标签样式
+.tech-tag {
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid var(--tech-border);
+  color: var(--tech-primary);
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-size: 12px;
+}
+
+// 科技分割线样式
+.tech-divider {
+  border-color: var(--tech-border);
+  
+  .el-divider__text {
+    background: var(--tech-bg-card);
+    color: var(--tech-primary);
+    font-weight: 600;
+  }
+}
+
+// 科技分页样式
+.tech-pagination {
+  .el-pagination__total,
+  .el-pagination__jump {
+    color: var(--tech-text-secondary);
+  }
+  
+  .el-pagination__sizes .el-input__inner {
+    background: var(--tech-bg-light);
+    border-color: var(--tech-border);
+    color: var(--tech-text-primary);
+  }
+  
+  .el-pager li {
+    background: var(--tech-bg-light);
+    border: 1px solid var(--tech-border);
+    color: var(--tech-text-secondary);
+    
+    &:hover {
+      color: var(--tech-primary);
+      border-color: var(--tech-primary);
+    }
+    
+    &.active {
+      background: var(--tech-primary);
+      border-color: var(--tech-primary);
+      color: white;
+    }
+  }
+  
+  .btn-prev,
+  .btn-next {
+    background: var(--tech-bg-light);
+    border: 1px solid var(--tech-border);
+    color: var(--tech-text-secondary);
+    
+    &:hover {
+      color: var(--tech-primary);
+    }
+  }
+}
+
+// 科技表单样式
+.tech-form {
+  .el-form-item__label {
+    color: var(--tech-text-secondary);
+    font-weight: 500;
+  }
+  
+  .el-input__inner,
+  .el-textarea__inner {
+    background: var(--tech-bg-light);
+    border-color: var(--tech-border);
+    color: var(--tech-text-primary);
+    
+    &:focus {
+      border-color: var(--tech-primary);
+      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+    }
+  }
+  
+  .el-select .el-input__inner {
+    background: var(--tech-bg-light);
+  }
+}
+
+// 科技对话框样式
+.tech-dialog {
+  .el-dialog {
+    background: var(--tech-bg-card);
+    border: 1px solid var(--tech-border);
+    border-radius: 12px;
+  }
+  
+  .el-dialog__title {
+    color: var(--tech-text-primary);
+  }
+  
+  .el-dialog__body {
+    color: var(--tech-text-secondary);
+  }
+}
+
+// 科技页面背景
+.tech-page {
+  background: var(--tech-bg-dark);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+// 科技标题样式
+.tech-title {
+  color: var(--tech-text-primary);
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  
+  &::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: var(--tech-gradient-primary);
+    margin-top: 10px;
+    border-radius: 2px;
+  }
+}
+
+// 科技搜索栏样式
+.tech-search {
+  background: var(--tech-bg-card);
+  border: 1px solid var(--tech-border);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+// 科技统计卡片样式
+.tech-stat-card {
+  background: var(--tech-bg-card);
+  border: 1px solid var(--tech-border);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--tech-gradient-primary);
+  }
+  
+  .stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--tech-primary);
+    margin-bottom: 8px;
+  }
+  
+  .stat-label {
+    color: var(--tech-text-secondary);
+    font-size: 14px;
+  }
+}
+
+// 科技导航栏样式
+.tech-navbar {
+  background: var(--tech-bg-card);
+  border-bottom: 1px solid var(--tech-border);
+  
+  .nav-item {
+    color: var(--tech-text-secondary);
+    
+    &:hover,
+    &.active {
+      color: var(--tech-primary);
+    }
+  }
+}
+
+// 科技侧边栏样式
+.tech-sidebar {
+  background: var(--tech-bg-card);
+  border-right: 1px solid var(--tech-border);
+  
+  .menu-item {
+    color: var(--tech-text-secondary);
+    
+    &:hover,
+    &.active {
+      background: var(--tech-bg-hover);
+      color: var(--tech-primary);
+      border-left: 3px solid var(--tech-primary);
+    }
+  }
+}
+
+// 科技加载动画
+@keyframes tech-loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.tech-loading {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--tech-border);
+  border-top: 3px solid var(--tech-primary);
+  border-radius: 50%;
+  animation: tech-loading 1s linear infinite;
+}
+
+// 科技脉冲动画
+@keyframes tech-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(0, 212, 255, 0);
+  }
+}
+
+.tech-pulse {
+  animation: tech-pulse 2s infinite;
+}
+
+// 科技发光效果
+.tech-glow {
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+// 科技网格背景
+.tech-grid-bg {
+  background-image: 
+    linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+// 科技渐变文字
+.tech-gradient-text {
+  background: var(--tech-gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+// 科技边框发光
+.tech-border-glow {
+  border: 1px solid var(--tech-border);
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+    border-color: var(--tech-border-glow);
+  }
+}
+
+// 科技状态指示器
+.tech-status {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+  
+  &.online {
+    background: var(--tech-success);
+    box-shadow: 0 0 8px var(--tech-success);
+  }
+  
+  &.offline {
+    background: var(--tech-danger);
+    box-shadow: 0 0 8px var(--tech-danger);
+  }
+  
+  &.warning {
+    background: var(--tech-warning);
+    box-shadow: 0 0 8px var(--tech-warning);
+  }
+}
+
+// 科技进度条
+.tech-progress {
+  background: var(--tech-bg-light);
+  border-radius: 10px;
+  height: 8px;
+  overflow: hidden;
+  
+  .progress-bar {
+    height: 100%;
+    background: var(--tech-gradient-primary);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+  }
+}
+
+// 科技徽章
+.tech-badge {
+  background: var(--tech-gradient-primary);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 212, 255, 0.3);
+}
+
+// 科技工具提示
+.tech-tooltip {
+  background: var(--tech-bg-card);
+  border: 1px solid var(--tech-border);
+  color: var(--tech-text-primary);
+  padding: 8px 12px;
+  border-radius: 6px;
+  box-shadow: var(--tech-shadow-md);
+}
+
+// 科技开关
+.tech-switch {
+  .el-switch__core {
+    background: var(--tech-bg-light);
+    border-color: var(--tech-border);
+  }
+  
+  &.is-checked .el-switch__core {
+    background: var(--tech-primary);
+    border-color: var(--tech-primary);
+  }
+}
+
+// 科技单选框和复选框
+.tech-radio,
+.tech-checkbox {
+  .el-radio__input.is-checked .el-radio__inner,
+  .el-checkbox__input.is-checked .el-checkbox__inner {
+    background: var(--tech-primary);
+    border-color: var(--tech-primary);
+  }
+  
+  .el-radio__label,
+  .el-checkbox__label {
+    color: var(--tech-text-secondary);
+  }
+}
+
+// 科技下拉菜单
+.tech-dropdown {
+  background: var(--tech-bg-card);
+  border: 1px solid var(--tech-border);
+  
+  .el-dropdown-menu__item {
+    color: var(--tech-text-secondary);
+    
+    &:hover {
+      background: var(--tech-bg-hover);
+      color: var(--tech-primary);
+    }
+  }
+}
+
+// 科技时间线
+.tech-timeline {
+  .el-timeline-item__node {
+    background: var(--tech-primary);
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+  }
+  
+  .el-timeline-item__content {
+    color: var(--tech-text-secondary);
+  }
+  
+  .el-timeline-item__timestamp {
+    color: var(--tech-text-muted);
+  }
+}
+
+// 科技步骤条
+.tech-steps {
+  .el-step__head.is-process,
+  .el-step__head.is-finish {
+    color: var(--tech-primary);
+    border-color: var(--tech-primary);
+  }
+  
+  .el-step__title.is-process,
+  .el-step__title.is-finish {
+    color: var(--tech-primary);
+  }
+}
+
+// 科技树形控件
+.tech-tree {
+  background: transparent;
+  
+  .el-tree-node__content {
+    color: var(--tech-text-secondary);
+    
+    &:hover {
+      background: var(--tech-bg-hover);
+    }
+  }
+  
+  .el-tree-node.is-current > .el-tree-node__content {
+    background: var(--tech-bg-hover);
+    color: var(--tech-primary);
+  }
+}
+
+// 科技标签页
+.tech-tabs {
+  .el-tabs__header {
+    border-bottom: 1px solid var(--tech-border);
+  }
+  
+  .el-tabs__item {
+    color: var(--tech-text-secondary);
+    
+    &:hover,
+    &.is-active {
+      color: var(--tech-primary);
+    }
+  }
+  
+  .el-tabs__active-bar {
+    background: var(--tech-primary);
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+  }
+}
+
+// 科技消息提示
+.tech-message {
+  background: var(--tech-bg-card);
+  border: 1px solid var(--tech-border);
+  color: var(--tech-text-primary);
+  box-shadow: var(--tech-shadow-md);
+}
+
+// 科技通知
+.tech-notification {
+  background: var(--tech-bg-card);
+  border: 1px solid var(--tech-border);
+  color: var(--tech-text-primary);
+  box-shadow: var(--tech-shadow-lg);
+  
+  .el-notification__title {
+    color: var(--tech-text-primary);
+  }
+  
+  .el-notification__content {
+    color: var(--tech-text-secondary);
+  }
+}
+
+// 科技弹窗确认
+.tech-confirm {
+  .el-message-box {
+    background: var(--tech-bg-card);
+    border: 1px solid var(--tech-border);
+  }
+  
+  .el-message-box__title {
+    color: var(--tech-text-primary);
+  }
+  
+  .el-message-box__content {
+    color: var(--tech-text-secondary);
+  }
+}
+
+// 科技上传组件
+.tech-upload {
+  .el-upload-dragger {
+    background: var(--tech-bg-light);
+    border: 2px dashed var(--tech-border);
+    
+    &:hover {
+      border-color: var(--tech-primary);
+    }
+  }
+}
+
+// 科技滑块
+.tech-slider {
+  .el-slider__runway {
+    background: var(--tech-bg-light);
+  }
+  
+  .el-slider__bar {
+    background: var(--tech-gradient-primary);
+  }
+  
+  .el-slider__button {
+    border-color: var(--tech-primary);
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+  }
+}
+
+// 科技颜色选择器
+.tech-color-picker {
+  .el-color-picker__trigger {
+    border-color: var(--tech-border);
+  }
+}
+
+// 科技日期选择器
+.tech-date-picker {
+  background: var(--tech-bg-card);
+  border: 1px solid var(--tech-border);
+  
+  .el-picker-panel__content {
+    color: var(--tech-text-secondary);
+  }
+  
+  .available:hover {
+    color: var(--tech-primary);
+  }
+  
+  .current:not(.disabled) span {
+    background: var(--tech-primary);
+  }
+}
+
+// 科技滚动条
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--tech-bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--tech-border);
+  border-radius: 4px;
+  
+  &:hover {
+    background: var(--tech-border-glow);
+  }
+}
+
+// 科技选择器
+.tech-select {
+  .el-select-dropdown {
+    background: var(--tech-bg-card);
+    border: 1px solid var(--tech-border);
+  }
+  
+  .el-select-dropdown__item {
+    color: var(--tech-text-secondary);
+    
+    &:hover,
+    &.selected {
+      background: var(--tech-bg-hover);
+      color: var(--tech-primary);
+    }
+  }
+}
+
+// 科技级联选择器
+.tech-cascader {
+  .el-cascader-menu {
+    background: var(--tech-bg-card);
+    border-color: var(--tech-border);
+  }
+  
+  .el-cascader-node {
+    color: var(--tech-text-secondary);
+    
+    &:hover,
+    &.in-active-path {
+      background: var(--tech-bg-hover);
+      color: var(--tech-primary);
+    }
+  }
+}
+
+// 科技自动完成
+.tech-autocomplete {
+  .el-autocomplete-suggestion {
+    background: var(--tech-bg-card);
+    border: 1px solid var(--tech-border);
+  }
+  
+  .el-autocomplete-suggestion__list li {
+    color: var(--tech-text-secondary);
+    
+    &:hover {
+      background: var(--tech-bg-hover);
+      color: var(--tech-primary);
+    }
+  }
+}
+
+// 科技评分
+.tech-rate {
+  .el-rate__icon {
+    color: var(--tech-border);
+    
+    &.hover,
+    &.active {
+      color: var(--tech-primary);
+    }
+  }
+}
+
+// 科技走马灯
+.tech-carousel {
+  .el-carousel__indicator {
+    .el-carousel__button {
+      background: var(--tech-border);
+    }
+    
+    &.is-active .el-carousel__button {
+      background: var(--tech-primary);
+    }
+  }
+}
+
+// 科技折叠面板
+.tech-collapse {
+  border-color: var(--tech-border);
+  
+  .el-collapse-item__header {
+    background: var(--tech-bg-card);
+    color: var(--tech-text-primary);
+    border-bottom-color: var(--tech-border);
+  }
+  
+  .el-collapse-item__wrap {
+    background: var(--tech-bg-card);
+    border-bottom-color: var(--tech-border);
+  }
+  
+  .el-collapse-item__content {
+    color: var(--tech-text-secondary);
+  }
+}
+
+// 科技描述列表
+.tech-descriptions {
+  .el-descriptions__header {
+    color: var(--tech-text-primary);
+  }
+  
+  .el-descriptions-item__label {
+    background: var(--tech-bg-light);
+    color: var(--tech-text-secondary);
+  }
+  
+  .el-descriptions-item__content {
+    background: var(--tech-bg-card);
+    color: var(--tech-text-primary);
+  }
+}
+
+// 科技结果
+.tech-result {
+  .el-result__title {
+    color: var(--tech-text-primary);
+  }
+  
+  .el-result__subtitle {
+    color: var(--tech-text-secondary);
+  }
+}
+
+// 科技骨架屏
+.tech-skeleton {
+  .el-skeleton__item {
+    background: linear-gradient(90deg, var(--tech-bg-light) 25%, var(--tech-bg-hover) 50%, var(--tech-bg-light) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+  }
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// 科技空状态
+.tech-empty {
+  .el-empty__description {
+    color: var(--tech-text-secondary);
+  }
+}
+
+// 科技图片
+.tech-image {
+  .el-image__error {
+    background: var(--tech-bg-light);
+    color: var(--tech-text-secondary);
+  }
+}
+
+// 科技回到顶部
+.tech-backtop {
+  background: var(--tech-bg-card);
+  border: 1px solid var(--tech-border);
+  color: var(--tech-primary);
+  box-shadow: var(--tech-shadow-md);
+  
+  &:hover {
+    background: var(--tech-bg-hover);
+    box-shadow: var(--tech-shadow-glow);
+  }
+}
+
+// 科技无限滚动
+.tech-infinite-scroll {
+  .infinite-loading {
+    color: var(--tech-text-secondary);
+  }
+}
+
+// 科技拖拽
+.tech-drag {
+  cursor: move;
+  
+  &:hover {
+    background: var(--tech-bg-hover);
+  }
+  
+  &.dragging {
+    opacity: 0.5;
+    background: var(--tech-bg-light);
+  }
+}
+
+// 科技响应式布局
+@media (max-width: 768px) {
+  .tech-page {
+    padding: 10px;
+  }
+  
+  .tech-card {
+    margin-bottom: 10px;
+  }
+  
+  .tech-title {
+    font-size: 20px;
+  }
+}
+
+// 科技打印样式
+@media print {
+  .tech-page {
+    background: white;
+    color: black;
+  }
+  
+  .tech-card {
+    border: 1px solid #ddd;
+    box-shadow: none;
+  }
+}
+
+// 科技暗色模式（默认就是暗色）
+.tech-dark-mode {
+  color-scheme: dark;
+}
+
+// 科技高对比度模式
+@media (prefers-contrast: high) {
+  .tech-card,
+  .tech-btn,
+  .tech-input {
+    border-width: 2px;
+  }
+}
+
+// 科技减少动画模式
+@media (prefers-reduced-motion: reduce) {
+  .tech-card,
+  .tech-btn,
+  .tech-loading,
+  .tech-pulse {
+    animation: none;
+    transition: none;
+  }
+}
+
+// 科技焦点样式（无障碍）
+.tech-focus:focus-visible {
+  outline: 2px solid var(--tech-primary);
+  outline-offset: 2px;
+}
+
+// 科技选中样式
+::selection {
+  background: rgba(0, 212, 255, 0.3);
+  color: var(--tech-text-primary);
+}
+
+// 科技占位符样式
+::placeholder {
+  color: var(--tech-text-muted);
+  opacity: 1;
+}
+
+// 科技输入框自动填充样式
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--tech-text-primary);
+  -webkit-box-shadow: 0 0 0px 1000px var(--tech-bg-light) inset;
+  transition: background-color 5000s ease-in-out 0s;
+}

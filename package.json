@@ -1,8 +1,8 @@
 {
-  "name": "ruoyi",
+  "name": "yilinsong",
   "version": "3.8.7",
-  "description": "若依管理系统",
-  "author": "若依",
+  "description": "毛孩子的家",
+  "author": "宋依琳",
   "license": "MIT",
   "type": "module",
   "scripts": {
