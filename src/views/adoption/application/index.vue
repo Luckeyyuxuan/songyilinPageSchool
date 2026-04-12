@@ -497,8 +497,8 @@ const downloadAgreement = async () => {
   
   .tech-radio {
     :deep(.el-radio__input.is-checked .el-radio__inner) {
-      background: var(--tech-primary);
-      border-color: var(--tech-primary);
+      background: #000000;
+      border-color: #000000;
     }
     
     :deep(.el-radio__label) {
