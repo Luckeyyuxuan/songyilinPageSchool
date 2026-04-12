@@ -37,6 +37,10 @@ service.interceptors.request.use(config => {
     config.url = url;
   }
   if (!isRepeatSubmit && (config.method === 'post' || config.method === 'put')) {
+    // 对FormData类型的请求跳过防重复提交验证
+    if (config.data instanceof FormData) {
+      return config;
+    }
     const requestObj = {
       url: config.url,
       data: typeof config.data === 'object' ? JSON.stringify(config.data) : config.data,
@@ -104,7 +108,7 @@ service.interceptors.response.use(res => {
       ElNotification.error({ title: msg })
       return Promise.reject('error')
     } else {
-      return  Promise.resolve(res.data)
+      return Promise.resolve(res.data)
     }
   },
   error => {

@@ -36,10 +36,9 @@
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="申请时间" width="180" />
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="100" fixed="right">
           <template #default="scope">
             <el-button size="small" @click="handleView(scope.row.id)">查看</el-button>
-            <el-button size="small" type="primary" @click="handleApprove(scope.row.id)" v-if="scope.row.status === 'pending'">审批</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -56,29 +55,7 @@
       />
     </el-card>
     
-    <!-- 审批对话框 -->
-    <el-dialog v-model="approveDialogVisible" title="审批领养申请" width="500px">
-      <el-form :model="approveForm" :rules="approveRules" ref="approveFormRef" label-width="100px">
-        <el-form-item label="审批结果" prop="result">
-          <el-radio-group v-model="approveForm.result">
-            <el-radio label="approved">通过</el-radio>
-            <el-radio label="rejected">拒绝</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="审批意见" prop="comments">
-          <el-input type="textarea" v-model="approveForm.comments" placeholder="请输入审批意见" />
-        </el-form-item>
-        <el-form-item label="押金金额" prop="deposit" v-if="approveForm.result === 'approved'">
-          <el-input v-model="approveForm.deposit" placeholder="请输入押金金额" type="number" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="approveDialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="submitApprove">提交审批</el-button>
-        </span>
-      </template>
-    </el-dialog>
+
   </div>
 </template>
 
@@ -86,7 +63,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
-import { getAdoptionList, approveAdoption } from '@/api/adoption/application'
+import { getAdoptionList } from '@/api/adoption/application'
 
 const router = useRouter()
 const tableData = ref([])
@@ -100,20 +77,7 @@ const pagination = reactive({
   total: 0
 })
 
-const approveDialogVisible = ref(false)
-const approveFormRef = ref()
-const currentApproveId = ref()
-const approveForm = reactive({
-  result: '',
-  comments: '',
-  deposit: 0
-})
 
-const approveRules = {
-  result: [{ required: true, message: '请选择审批结果', trigger: 'change' }],
-  comments: [{ required: true, message: '请输入审批意见', trigger: 'blur' }],
-  deposit: [{ required: true, message: '请输入押金金额', trigger: 'blur' }, { type: 'number', min: 0, message: '押金金额必须大于等于0', trigger: 'blur' }]
-}
 
 const getStatusType = (status) => {
   switch (status) {
@@ -177,30 +141,6 @@ const handleView = (id) => {
   router.push(`/adoption/detail/${id}`)
 }
 
-const handleApprove = (id) => {
-  currentApproveId.value = id
-  approveForm.result = ''
-  approveForm.comments = ''
-  approveForm.deposit = 0
-  approveDialogVisible.value = true
-}
-
-const submitApprove = async () => {
-  if (!approveFormRef.value) return
-  await approveFormRef.value.validate(async (valid) => {
-    if (valid) {
-      try {
-        await approveAdoption(currentApproveId.value, approveForm)
-        ElMessage.success('审批成功')
-        approveDialogVisible.value = false
-        loadData()
-      } catch (error) {
-        ElMessage.error('审批失败')
-      }
-    }
-  })
-}
-
 onMounted(() => {
   loadData()
 })
@@ -209,15 +149,33 @@ onMounted(() => {
 <style scoped>
 .adoption-list {
   padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 20px;
 }
 
 .dialog-footer {
   text-align: right;
+}
+
+/* 响应式调整 */
+@media screen and (max-width: 768px) {
+  .adoption-list {
+    padding: 10px;
+  }
+  
+  .el-table {
+    font-size: 12px;
+  }
+  
+  .el-table-column {
+    width: auto !important;
+  }
 }
 </style>

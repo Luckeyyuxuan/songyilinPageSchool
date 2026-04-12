@@ -205,10 +205,70 @@ export const constantRoutes = [
         meta: { title: '志愿者管理' }
       },
       {
+        path: 'volunteer/add',
+        component: () => import('@/views/admin/volunteer/add.vue'),
+        name: 'VolunteerAdd',
+        hidden: true,
+        meta: { title: '添加志愿者', activeMenu: '/admin/volunteer' }
+      },
+      {
+        path: 'volunteer/edit/:id',
+        component: () => import('@/views/admin/volunteer/edit.vue'),
+        name: 'VolunteerEdit',
+        hidden: true,
+        meta: { title: '编辑志愿者', activeMenu: '/admin/volunteer' }
+      },
+      {
+        path: 'volunteer/detail/:id',
+        component: () => import('@/views/admin/volunteer/detail.vue'),
+        name: 'VolunteerDetail',
+        hidden: true,
+        meta: { title: '志愿者详情', activeMenu: '/admin/volunteer' }
+      },
+      {
         path: 'organization',
         component: () => import('@/views/admin/organization/index.vue'),
         name: 'OrganizationList',
         meta: { title: '合作机构管理' }
+      },
+      {
+        path: 'organization/add',
+        component: () => import('@/views/admin/organization/add.vue'),
+        name: 'OrganizationAdd',
+        hidden: true,
+        meta: { title: '添加合作机构', activeMenu: '/admin/organization' }
+      },
+      {
+        path: 'organization/edit/:id',
+        component: () => import('@/views/admin/organization/edit.vue'),
+        name: 'OrganizationEdit',
+        hidden: true,
+        meta: { title: '编辑合作机构', activeMenu: '/admin/organization' }
+      },
+      {
+        path: 'organization/detail/:id',
+        component: () => import('@/views/admin/organization/detail.vue'),
+        name: 'OrganizationDetail',
+        hidden: true,
+        meta: { title: '合作机构详情', activeMenu: '/admin/organization' }
+      },
+      {
+        path: 'adoption-approval',
+        component: () => import('@/views/adoption/admin/approval.vue'),
+        name: 'AdoptionApproval',
+        meta: { title: '领养申请审批' }
+      },
+      {
+        path: 'donation-approval',
+        component: () => import('@/views/donation/admin/approval.vue'),
+        name: 'DonationApproval',
+        meta: { title: '捐赠申请审批' }
+      },
+      {
+        path: 'complaint-handle',
+        component: () => import('@/views/ComplaintReport/handle/index.vue'),
+        name: 'ComplaintHandle',
+        meta: { title: '投诉举报处理' }
       }
     ]
   }

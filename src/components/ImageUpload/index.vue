@@ -2,7 +2,7 @@
   <div class="component-upload-image">
     <el-upload
       multiple
-      :action="uploadImgUrl"
+      :http-request="handleHttpRequest"
       list-type="picture-card"
       :on-success="handleUploadSuccess"
       :before-upload="handleBeforeUpload"
@@ -38,7 +38,14 @@
       append-to-body
     >
       <img
+        v-if="dialogImageUrl.includes('.jpg') || dialogImageUrl.includes('.jpeg') || dialogImageUrl.includes('.png') || dialogImageUrl.includes('.gif')"
         :src="dialogImageUrl"
+        style="display: block; max-width: 100%; margin: 0 auto"
+      />
+      <video
+        v-else-if="dialogImageUrl.includes('.mp4')"
+        :src="dialogImageUrl"
+        controls
         style="display: block; max-width: 100%; margin: 0 auto"
       />
     </el-dialog>
@@ -47,6 +54,7 @@
 
 <script setup>
 import { getToken } from "@/utils/auth";
+import request from "@/utils/request";
 
 const props = defineProps({
   modelValue: [String, Object, Array],
@@ -60,10 +68,10 @@ const props = defineProps({
     type: Number,
     default: 5,
   },
-  // 文件类型, 例如['png', 'jpg', 'jpeg']
+  // 文件类型, 例如['png', 'jpg', 'jpeg', 'mp4']
   fileType: {
     type: Array,
-    default: () => ["png", "jpg", "jpeg"],
+    default: () => ["png", "jpg", "jpeg", "mp4"],
   },
   // 是否显示提示
   isShowTip: {
@@ -79,7 +87,6 @@ const uploadList = ref([]);
 const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
 const baseUrl = import.meta.env.VITE_APP_BASE_API;
-const uploadImgUrl = ref(import.meta.env.VITE_APP_BASE_API + "/common/upload"); // 上传的图片服务器地址
 const headers = ref({ Authorization: "Bearer " + getToken() });
 const fileList = ref([]);
 const showTip = computed(
@@ -109,34 +116,34 @@ watch(() => props.modelValue, val => {
 
 // 上传前loading加载
 function handleBeforeUpload(file) {
-  let isImg = false;
+  let isAllowed = false;
   if (props.fileType.length) {
     let fileExtension = "";
     if (file.name.lastIndexOf(".") > -1) {
       fileExtension = file.name.slice(file.name.lastIndexOf(".") + 1);
     }
-    isImg = props.fileType.some(type => {
+    isAllowed = props.fileType.some(type => {
       if (file.type.indexOf(type) > -1) return true;
       if (fileExtension && fileExtension.indexOf(type) > -1) return true;
       return false;
     });
   } else {
-    isImg = file.type.indexOf("image") > -1;
+    isAllowed = file.type.indexOf("image") > -1 || file.type.indexOf("video") > -1;
   }
-  if (!isImg) {
+  if (!isAllowed) {
     proxy.$modal.msgError(
-      `文件格式不正确, 请上传${props.fileType.join("/")}图片格式文件!`
+      `文件格式不正确, 请上传${props.fileType.join("/")}格式文件!`
     );
     return false;
   }
   if (props.fileSize) {
     const isLt = file.size / 1024 / 1024 < props.fileSize;
     if (!isLt) {
-      proxy.$modal.msgError(`上传头像图片大小不能超过 ${props.fileSize} MB!`);
+      proxy.$modal.msgError(`上传文件大小不能超过 ${props.fileSize} MB!`);
       return false;
     }
   }
-  proxy.$modal.loading("正在上传图片，请稍候...");
+  proxy.$modal.loading("正在上传文件，请稍候...");
   number.value++;
 }
 
@@ -184,6 +191,31 @@ function uploadedSuccessfully() {
 function handleUploadError() {
   proxy.$modal.msgError("上传图片失败");
   proxy.$modal.closeLoading();
+}
+
+// 自定义上传方法
+function handleHttpRequest(options) {
+  const { file, onSuccess, onError } = options;
+  const formData = new FormData();
+  formData.append('file', file);
+  
+  request({
+    url: '/common/upload',
+    method: 'post',
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      'Authorization': 'Bearer ' + getToken()
+    }
+  }).then(res => {
+    if (res.code === 200) {
+      onSuccess(res);
+    } else {
+      onError(res);
+    }
+  }).catch(error => {
+    onError(error);
+  });
 }
 
 // 预览

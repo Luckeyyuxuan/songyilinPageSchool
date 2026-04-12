@@ -36,7 +36,7 @@
         </el-form-item>
         
         <el-form-item label="故事内容" prop="content">
-          <el-editor v-model="form.content" style="min-height: 300px" />
+          <Editor v-model="form.content" style="min-height: 300px" />
         </el-form-item>
         
         <el-form-item label="作者" prop="author">
@@ -57,6 +57,7 @@ import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { publishStory } from '@/api/story/story'
+import Editor from '@/components/Editor/index.vue'
 
 const router = useRouter()
 const formRef = ref()
@@ -117,5 +118,13 @@ const resetForm = () => {
 
 .upload-demo {
   margin-bottom: 10px;
+}
+
+:deep(.el-form-item__content) {
+  width: 100%;
+}
+
+:deep(.el-input) {
+  width: 100%;
 }
 </style>

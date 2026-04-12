@@ -17,11 +17,22 @@ export function getOrganizationDetail(id) {
   })
 }
 
+// 获取合作机构详情（用于编辑和查看页面）
+export function getOrganizationById(id) {
+  return request({
+    url: `/admin/organization/${id}`,
+    method: 'get'
+  })
+}
+
 // 审核合作机构
 export function approveOrganization(id, data) {
   return request({
     url: `/admin/organization/${id}/approve`,
     method: 'put',
+    params: {
+      orgId: id
+    },
     data
   })
 }
@@ -36,10 +47,13 @@ export function addOrganization(data) {
 }
 
 // 更新合作机构信息
-export function updateOrganization(id, data) {
+export function updateOrganization(data) {
   return request({
-    url: `/admin/organization/${id}`,
+    url: `/admin/organization/${data.id}`,
     method: 'put',
+    params: {
+      orgId: data.id
+    },
     data
   })
 }
@@ -48,7 +62,10 @@ export function updateOrganization(id, data) {
 export function deleteOrganization(id) {
   return request({
     url: `/admin/organization/${id}`,
-    method: 'delete'
+    method: 'delete',
+    params: {
+      orgId: id
+    }
   })
 }
 

@@ -57,3 +57,12 @@ export function uploadAgreement(id, file) {
     }
   })
 }
+
+// 批量审批领养申请
+export function batchApproveAdoption(data) {
+  return request({
+    url: '/adoption/application/admin/batch-approve',
+    method: 'post',
+    data
+  })
+}

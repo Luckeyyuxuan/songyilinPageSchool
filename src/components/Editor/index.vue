@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="editor-container">
     <el-upload
       :action="uploadUrl"
       :before-upload="handleBeforeUpload"
@@ -13,27 +13,22 @@
     >
       <i ref="uploadRef" class="editor-img-uploader"></i>
     </el-upload>
-  </div>
-  <div class="editor">
-    <quill-editor
-      ref="quillEditorRef"
-      v-model:content="content"
-      contentType="html"
-      @textChange="(e) => $emit('update:modelValue', content)"
-      :options="options"
-      :style="styles"
-    />
+    <div class="editor" :style="styles">
+      <editor-content
+        :editor="editor"
+      />
+    </div>
   </div>
 </template>
 
 <script setup>
-import { QuillEditor } from "@vueup/vue-quill";
-import "@vueup/vue-quill/dist/vue-quill.snow.css";
+import { Editor, EditorContent } from "@tiptap/vue-3";
+import StarterKit from "@tiptap/starter-kit";
 import { getToken } from "@/utils/auth";
+import { ref, computed, watch, onMounted, getCurrentInstance } from 'vue';
 
 const { proxy } = getCurrentInstance();
 
-const quillEditorRef = ref();
 const uploadUrl = ref(import.meta.env.VITE_APP_BASE_API + "/common/upload"); // 上传的图片服务器地址
 const headers = ref({
   Authorization: "Bearer " + getToken()
@@ -71,28 +66,7 @@ const props = defineProps({
   }
 });
 
-const options = ref({
-  theme: "snow",
-  bounds: document.body,
-  debug: "warn",
-  modules: {
-    // 工具栏配置
-    toolbar: [
-      ["bold", "italic", "underline", "strike"],      // 加粗 斜体 下划线 删除线
-      ["blockquote", "code-block"],                   // 引用  代码块
-      [{ list: "ordered" }, { list: "bullet" }],      // 有序、无序列表
-      [{ indent: "-1" }, { indent: "+1" }],           // 缩进
-      [{ size: ["small", false, "large", "huge"] }],  // 字体大小
-      [{ header: [1, 2, 3, 4, 5, 6, false] }],        // 标题
-      [{ color: [] }, { background: [] }],            // 字体颜色、字体背景颜色
-      [{ align: [] }],                                // 对齐方式
-      ["clean"],                                      // 清除文本格式
-      ["link", "image", "video"]                      // 链接、图片、视频
-    ],
-  },
-  placeholder: "请输入内容",
-  readOnly: props.readOnly
-});
+const editor = ref();
 
 const styles = computed(() => {
   let style = {};
@@ -105,25 +79,26 @@ const styles = computed(() => {
   return style;
 });
 
-const content = ref("");
-watch(() => props.modelValue, (v) => {
-  if (v !== content.value) {
-    content.value = v === undefined ? "<p></p>" : v;
-  }
-}, { immediate: true });
-
-// 如果设置了上传地址则自定义图片上传事件
+// 初始化编辑器
 onMounted(() => {
-  if (props.type == 'url') {
-    let quill = quillEditorRef.value.getQuill();
-    let toolbar = quill.getModule("toolbar");
-    toolbar.addHandler("image", (value) => {
-      if (value) {
-        proxy.$refs.uploadRef.click();
-      } else {
-        quill.format("image", false);
-      }
-    });
+  editor.value = new Editor({
+    content: props.modelValue || '<p></p>',
+    extensions: [
+      StarterKit
+    ],
+    editable: !props.readOnly,
+    onUpdate: ({ editor }) => {
+      const html = editor.getHTML();
+      proxy.$emit('update:modelValue', html);
+    },
+    placeholder: '请输入内容'
+  });
+});
+
+// 监听modelValue变化
+watch(() => props.modelValue, (v) => {
+  if (editor.value && v !== editor.value.getHTML()) {
+    editor.value.commands.setContent(v || '<p></p>');
   }
 });
 
@@ -151,14 +126,15 @@ function handleBeforeUpload(file) {
 function handleUploadSuccess(res, file) {
   // 如果上传成功
   if (res.code == 200) {
-    // 获取富文本实例
-    let quill = toRaw(quillEditorRef.value).getQuill();
-    // 获取光标位置
-    let length = quill.selection.savedRange.index;
     // 插入图片，res.url为服务器返回的图片链接地址
-    quill.insertEmbed(length, "image", import.meta.env.VITE_APP_BASE_API + res.fileName);
-    // 调整光标到最后
-    quill.setSelection(length + 1);
+    editor.value.commands.insertContent({
+      type: 'image',
+      attrs: {
+        src: import.meta.env.VITE_APP_BASE_API + res.fileName,
+        alt: '上传的图片',
+        title: '上传的图片'
+      }
+    });
   } else {
     proxy.$modal.msgError("图片插入失败");
   }
@@ -171,81 +147,27 @@ function handleUploadError() {
 </script>
 
 <style>
+.editor-container {
+  width: 100%;
+}
 .editor-img-uploader {
   display: none;
 }
-.editor, .ql-toolbar {
-  white-space: pre-wrap !important;
-  line-height: normal !important;
+.editor {
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  width: 100%;
+  min-width: 100%;
 }
-.quill-img {
-  display: none;
+.ProseMirror {
+  padding: 10px;
+  min-height: 300px;
+  width: 100%;
 }
-.ql-snow .ql-tooltip[data-mode="link"]::before {
-  content: "请输入链接地址:";
-}
-.ql-snow .ql-tooltip.ql-editing a.ql-action::after {
-  border-right: 0px;
-  content: "保存";
-  padding-right: 0px;
-}
-.ql-snow .ql-tooltip[data-mode="video"]::before {
-  content: "请输入视频地址:";
-}
-.ql-snow .ql-picker.ql-size .ql-picker-label::before,
-.ql-snow .ql-picker.ql-size .ql-picker-item::before {
-  content: "14px";
-}
-.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="small"]::before,
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="small"]::before {
-  content: "10px";
-}
-.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="large"]::before,
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="large"]::before {
-  content: "18px";
-}
-.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="huge"]::before,
-.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="huge"]::before {
-  content: "32px";
-}
-.ql-snow .ql-picker.ql-header .ql-picker-label::before,
-.ql-snow .ql-picker.ql-header .ql-picker-item::before {
-  content: "文本";
-}
-.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="1"]::before,
-.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="1"]::before {
-  content: "标题1";
-}
-.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="2"]::before,
-.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="2"]::before {
-  content: "标题2";
-}
-.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="3"]::before,
-.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="3"]::before {
-  content: "标题3";
-}
-.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="4"]::before,
-.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="4"]::before {
-  content: "标题4";
-}
-.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="5"]::before,
-.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="5"]::before {
-  content: "标题5";
-}
-.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="6"]::before,
-.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="6"]::before {
-  content: "标题6";
-}
-.ql-snow .ql-picker.ql-font .ql-picker-label::before,
-.ql-snow .ql-picker.ql-font .ql-picker-item::before {
-  content: "标准字体";
-}
-.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="serif"]::before,
-.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="serif"]::before {
-  content: "衬线字体";
-}
-.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="monospace"]::before,
-.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="monospace"]::before {
-  content: "等宽字体";
+.ProseMirror-focused {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 </style>

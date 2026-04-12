@@ -8,7 +8,7 @@
       <template #header>
         <div class="card-header">
           <span class="section-title">
-            <el-icon class="title-icon"><Gift /></el-icon>
+            <el-icon class="title-icon"><Present /></el-icon>
             填写捐赠信息
           </span>
         </div>
@@ -244,7 +244,7 @@ import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { submitDonationApplication } from '@/api/donation/application'
 import { 
-  Gift,
+  Present,
   UserFilled,
   User,
   Phone,

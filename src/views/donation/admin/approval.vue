@@ -1,8 +1,8 @@
 <template>
-  <div class="donation-list tech-page tech-grid-bg">
+  <div class="donation-admin-approval tech-page tech-grid-bg">
     <div class="tech-title">
-      <span class="tech-gradient-text">物资捐赠</span>
-      <span class="tech-subtitle">爱心传递，温暖你我</span>
+      <span class="tech-gradient-text">捐赠申请审批</span>
+      <span class="tech-subtitle">管理捐赠，传递爱心</span>
     </div>
 
     <el-card shadow="hover" class="tech-card">
@@ -10,12 +10,18 @@
         <div class="card-header">
           <span class="section-title">
             <el-icon class="title-icon"><Present /></el-icon>
-            捐赠列表
+            捐赠审批列表
           </span>
-          <el-button type="primary" class="tech-btn add-btn" @click="handleAdd">
-            <el-icon><Plus /></el-icon>
-            新增捐赠
-          </el-button>
+          <div class="batch-actions">
+            <el-button type="success" class="tech-btn batch-confirm-btn" @click="handleBatchConfirm" :disabled="!selectedRows.length">
+              <el-icon><Check /></el-icon>
+              批量确认
+            </el-button>
+            <el-button type="danger" class="tech-btn batch-cancel-btn" @click="handleBatchCancel" :disabled="!selectedRows.length">
+              <el-icon><Close /></el-icon>
+              批量取消
+            </el-button>
+          </div>
         </div>
       </template>
       
@@ -75,7 +81,13 @@
         </el-form-item>
       </el-form>
       
-      <el-table :data="tableData" class="tech-table donation-table" stripe>
+      <el-table 
+        :data="tableData" 
+        class="tech-table donation-table" 
+        stripe
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="55" />
         <el-table-column prop="id" label="捐赠编号" width="100" />
         <el-table-column prop="donorName" label="捐赠人" width="120" />
         <el-table-column prop="contactPhone" label="联系电话" width="150" />
@@ -96,11 +108,19 @@
             <el-tag :type="getStatusType(scope.row.status)">{{ getStatusText(scope.row.status) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="100" fixed="right">
+        <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
             <el-button size="small" class="view-btn" @click="handleView(scope.row.id)">
               <el-icon><View /></el-icon>
               查看
+            </el-button>
+            <el-button size="small" type="success" class="confirm-btn" @click="handleConfirm(scope.row.id)" v-if="scope.row.status === 'pending'">
+              <el-icon><Check /></el-icon>
+              确认收到
+            </el-button>
+            <el-button size="small" type="danger" class="cancel-btn" @click="handleCancel(scope.row.id)" v-if="scope.row.status === 'pending'">
+              <el-icon><Close /></el-icon>
+              取消
             </el-button>
           </template>
         </el-table-column>
@@ -162,10 +182,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
-import { getDonationList } from '@/api/donation/application'
+import { getDonationList, confirmDonation, cancelDonation, batchConfirmDonation, batchCancelDonation } from '@/api/donation/application'
 import {
   Present,
   Plus,
@@ -184,8 +204,9 @@ import {
 
 const router = useRouter()
 const tableData = ref([])
+const selectedRows = ref([])
 const searchForm = reactive({
-  status: '',
+  status: 'pending',
   donorName: '',
   donationType: ''
 })
@@ -267,7 +288,7 @@ const handleSearch = () => {
 }
 
 const resetSearch = () => {
-  searchForm.status = ''
+  searchForm.status = 'pending'
   searchForm.donorName = ''
   searchForm.donationType = ''
   pagination.current = 1
@@ -284,12 +305,56 @@ const handleCurrentChange = (current) => {
   loadData()
 }
 
-const handleAdd = () => {
-  router.push('/donation/application')
+const handleSelectionChange = (val) => {
+  selectedRows.value = val
 }
 
 const handleView = (id) => {
   router.push(`/donation/detail/${id}`)
+}
+
+const handleConfirm = async (id) => {
+  try {
+    await confirmDonation(id)
+    ElMessage.success('确认成功')
+    loadData()
+  } catch (error) {
+    ElMessage.error('确认失败')
+  }
+}
+
+const handleCancel = async (id) => {
+  try {
+    await cancelDonation(id)
+    ElMessage.success('取消成功')
+    loadData()
+  } catch (error) {
+    ElMessage.error('取消失败')
+  }
+}
+
+const handleBatchConfirm = async () => {
+  if (!selectedRows.value.length) return
+  try {
+    const ids = selectedRows.value.map(row => row.id)
+    await batchConfirmDonation({ ids })
+    ElMessage.success('批量确认成功')
+    loadData()
+  } catch (error) {
+    ElMessage.error('批量确认失败')
+  }
+}
+
+const handleBatchCancel = async () => {
+  if (!selectedRows.value.length) return
+  try {
+    const ids = selectedRows.value.map(row => row.id)
+    await batchCancelDonation({ ids })
+    ElMessage.success('批量取消成功')
+    loadData()
+  } catch (error) {
+    ElMessage.error('批量取消失败')
+  }
 }
 
 onMounted(() => {
@@ -300,7 +365,7 @@ onMounted(() => {
 <style scoped lang="scss">
 @import '@/assets/styles/tech-theme.scss';
 
-.donation-list {
+.donation-admin-approval {
   min-height: 100vh;
   padding: 24px;
 }
@@ -348,13 +413,26 @@ onMounted(() => {
       }
     }
 
-    .add-btn {
-      background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
-      border: none;
-      padding: 10px 20px;
+    .batch-actions {
+      display: flex;
+      gap: 12px;
 
-      &:hover {
-        box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+      .batch-confirm-btn {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border: none;
+
+        &:hover {
+          box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+      }
+
+      .batch-cancel-btn {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        border: none;
+
+        &:hover {
+          box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+        }
       }
     }
   }
@@ -586,12 +664,23 @@ onMounted(() => {
 }
 
 @media (max-width: 768px) {
-  .donation-list {
+  .donation-admin-approval {
     padding: 16px;
   }
 
   .tech-title .tech-gradient-text {
     font-size: 24px;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+
+    .batch-actions {
+      width: 100%;
+      justify-content: space-between;
+    }
   }
 
   .search-form {

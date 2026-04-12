@@ -22,7 +22,7 @@
         </el-form-item>
         
         <el-form-item label="帖子内容" prop="content">
-          <el-editor v-model="form.content" style="min-height: 300px" />
+          <Editor v-model="form.content" style="min-height: 300px" />
         </el-form-item>
         
         <el-form-item label="作者" prop="author">
@@ -43,6 +43,7 @@ import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { publishPost } from '@/api/community/post'
+import Editor from '@/components/Editor/index.vue'
 
 const router = useRouter()
 const formRef = ref()
