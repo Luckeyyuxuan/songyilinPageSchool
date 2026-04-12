@@ -1,8 +1,8 @@
 <template>
-  <div class="complaint-page tech-page tech-grid-bg">
+  <div class="complaint-handle-page tech-page tech-grid-bg">
     <div class="tech-title">
-      <span class="tech-gradient-text">投诉举报管理</span>
-      <span class="tech-subtitle">管理用户投诉举报记录、处理流程及结果反馈</span>
+      <span class="tech-gradient-text">投诉举报处理管理</span>
+      <span class="tech-subtitle">管理投诉举报的处理状态、处理结果及反馈</span>
     </div>
 
     <el-card shadow="hover" class="tech-card search-card">
@@ -17,6 +17,19 @@
       <el-form :model="queryParams" ref="queryRef" v-show="showSearch" label-width="100px" class="search-form">
         <el-row :gutter="20">
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
+            <el-form-item label="投诉ID" prop="complaintId">
+              <el-input
+                v-model="queryParams.complaintId"
+                placeholder="请输入投诉ID"
+                clearable
+                @keyup.enter="handleQuery"
+                class="tech-input"
+              >
+                <template #prefix><el-icon><Document /></el-icon></template>
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :xs="24" :sm="12" :md="8" :lg="6">
             <el-form-item label="举报人ID" prop="reportUserId">
               <el-input
                 v-model="queryParams.reportUserId"
@@ -27,55 +40,6 @@
               >
                 <template #prefix><el-icon><User /></el-icon></template>
               </el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" :md="8" :lg="6">
-            <el-form-item label="举报对象类型" prop="targetType">
-              <el-select v-model="queryParams.targetType" placeholder="请选择举报对象类型" clearable class="tech-select">
-                <el-option
-                  v-for="dict in tsjb"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" :md="8" :lg="6">
-            <el-form-item label="举报对象ID" prop="targetId">
-              <el-input
-                v-model="queryParams.targetId"
-                placeholder="请输入举报对象ID"
-                clearable
-                @keyup.enter="handleQuery"
-                class="tech-input"
-              >
-                <template #prefix><el-icon><Document /></el-icon></template>
-              </el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" :md="8" :lg="6">
-            <el-form-item label="投诉类型" prop="complaintType">
-              <el-select v-model="queryParams.complaintType" placeholder="请选择投诉类型" clearable class="tech-select">
-                <el-option
-                  v-for="dict in afds"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" :md="8" :lg="6">
-            <el-form-item label="是否匿名" prop="isAnonymous">
-              <el-select v-model="queryParams.isAnonymous" placeholder="请选择是否匿名" clearable class="tech-select">
-                <el-option
-                  v-for="dict in sfnm"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                />
-              </el-select>
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
@@ -103,17 +67,6 @@
               </el-input>
             </el-form-item>
           </el-col>
-          <el-col :xs="24" :sm="12" :md="8" :lg="6">
-            <el-form-item label="处理时间" prop="handleTime">
-              <el-date-picker clearable
-                v-model="queryParams.handleTime"
-                type="date"
-                value-format="YYYY-MM-DD"
-                placeholder="请选择处理时间"
-                class="tech-date-picker">
-              </el-date-picker>
-            </el-form-item>
-          </el-col>
           <el-col :xs="24" :sm="24" :md="16" :lg="12">
             <el-form-item>
               <el-button type="primary" icon="Search" @click="handleQuery" class="tech-btn tech-btn-primary">搜索</el-button>
@@ -129,49 +82,13 @@
         <div class="card-header">
           <span class="section-title">
             <el-icon class="title-icon"><Warning /></el-icon>
-            投诉举报列表
+            投诉举报处理列表
           </span>
-          <div class="header-actions">
-            <el-button
-              type="primary"
-              plain
-              icon="Plus"
-              @click="handleAdd"
-              v-hasPermi="['ComplaintReport:ComplaintReport:add']"
-              class="tech-btn tech-btn-primary"
-            >新增</el-button>
-            <el-button
-              type="success"
-              plain
-              icon="Edit"
-              :disabled="single"
-              @click="handleUpdate"
-              v-hasPermi="['ComplaintReport:ComplaintReport:edit']"
-              class="tech-btn tech-btn-success"
-            >修改</el-button>
-            <el-button
-              type="danger"
-              plain
-              icon="Delete"
-              :disabled="multiple"
-              @click="handleDelete"
-              v-hasPermi="['ComplaintReport:ComplaintReport:remove']"
-              class="tech-btn tech-btn-danger"
-            >删除</el-button>
-            <el-button
-              type="warning"
-              plain
-              icon="Download"
-              @click="handleExport"
-              v-hasPermi="['ComplaintReport:ComplaintReport:export']"
-              class="tech-btn tech-btn-warning"
-            >导出</el-button>
-            <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
-          </div>
+          <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
         </div>
       </template>
 
-      <el-table v-loading="loading" :data="ComplaintReportList" @selection-change="handleSelectionChange" class="tech-table" stripe>
+      <el-table v-loading="loading" :data="complaintList" @selection-change="handleSelectionChange" class="tech-table" stripe>
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="ID" align="center" prop="complaintId" width="80" />
         <el-table-column label="举报人ID" align="center" prop="reportUserId" width="100" />
@@ -195,14 +112,6 @@
             <div class="complaint-content" v-html="scope.row.complaintContent"></div>
           </template>
         </el-table-column>
-        <el-table-column label="证据URL" align="center" prop="evidenceUrl" width="120" show-overflow-tooltip />
-        <el-table-column label="是否匿名" align="center" prop="isAnonymous" width="90">
-          <template #default="scope">
-            <el-tag :type="scope.row.isAnonymous === '1' ? 'warning' : 'info'" effect="dark" size="small">
-              <dict-tag :options="sfnm" :value="scope.row.isAnonymous"/>
-            </el-tag>
-          </template>
-        </el-table-column>
         <el-table-column label="处理状态" align="center" prop="handleStatus" width="100">
           <template #default="scope">
             <el-tag :type="getHandleStatusColor(scope.row.handleStatus)" effect="dark" size="small">
@@ -217,10 +126,9 @@
             <span class="time-text">{{ parseTime(scope.row.handleTime, '{y}-{m}-{d} {h}:{i}') }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="180" fixed="right">
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="120" fixed="right">
           <template #default="scope">
-            <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['ComplaintReport:ComplaintReport:edit']">修改</el-button>
-            <el-button link type="danger" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['ComplaintReport:ComplaintReport:remove']">删除</el-button>
+            <el-button link type="primary" icon="Edit" @click="handleProcess(scope.row)">处理</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -235,61 +143,16 @@
     </el-card>
 
     <el-dialog :title="title" v-model="open" width="700px" append-to-body class="tech-dialog">
-      <el-form ref="ComplaintReportRef" :model="form" :rules="rules" label-width="110px" class="dialog-form">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="110px" class="dialog-form">
         <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="举报人ID" prop="reportUserId">
-              <el-input v-model="form.reportUserId" placeholder="请输入举报人ID" class="tech-input" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="举报对象类型" prop="targetType">
-              <el-select v-model="form.targetType" placeholder="请选择举报对象类型" class="tech-select">
-                <el-option
-                  v-for="dict in tsjb"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="parseInt(dict.value)"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="举报对象ID" prop="targetId">
-              <el-input v-model="form.targetId" placeholder="请输入举报对象ID" class="tech-input" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="投诉类型" prop="complaintType">
-              <el-select v-model="form.complaintType" placeholder="请选择投诉类型" class="tech-select">
-                <el-option
-                  v-for="dict in afds"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="parseInt(dict.value)"
-                ></el-option>
-              </el-select>
+          <el-col :span="24">
+            <el-form-item label="投诉ID" prop="complaintId">
+              <el-input v-model="form.complaintId" placeholder="投诉ID" disabled class="tech-input" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="投诉内容" prop="complaintContent">
-              <editor v-model="form.complaintContent" :min-height="192"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="证据图片/文件URL" prop="evidenceUrl">
-              <el-input v-model="form.evidenceUrl" type="textarea" placeholder="请输入内容" class="tech-textarea" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="是否匿名" prop="isAnonymous">
-              <el-radio-group v-model="form.isAnonymous">
-                <el-radio
-                  v-for="dict in sfnm"
-                  :key="dict.value"
-                  :label="parseInt(dict.value)"
-                >{{dict.label}}</el-radio>
-              </el-radio-group>
+              <el-input v-model="form.complaintContent" type="textarea" placeholder="投诉内容" disabled class="tech-textarea" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -299,7 +162,7 @@
                   v-for="dict in dansjd"
                   :key="dict.value"
                   :label="dict.label"
-                  :value="parseInt(dict.value)"
+                  :value="dict.value"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -313,8 +176,8 @@
             <el-form-item label="处理时间" prop="handleTime">
               <el-date-picker clearable
                 v-model="form.handleTime"
-                type="date"
-                value-format="YYYY-MM-DD"
+                type="datetime"
+                value-format="YYYY-MM-DD HH:mm:ss"
                 placeholder="请选择处理时间"
                 class="tech-date-picker">
               </el-date-picker>
@@ -322,7 +185,7 @@
           </el-col>
           <el-col :span="24">
             <el-form-item label="处理结果" prop="handleRemark">
-              <el-input v-model="form.handleRemark" type="textarea" placeholder="请输入内容" class="tech-textarea" />
+              <el-input v-model="form.handleRemark" type="textarea" placeholder="请输入处理结果" class="tech-textarea" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -337,61 +200,54 @@
   </div>
 </template>
 
-<script setup name="ComplaintReport">
-import { listComplaintReport, getComplaintReport, delComplaintReport, addComplaintReport, updateComplaintReport } from "@/api/ComplaintReport/ComplaintReport"
+<script setup name="ComplaintHandle">
+import { listComplaintReport, getComplaintReport, updateComplaintReport } from "@/api/ComplaintReport/ComplaintReport"
 import { ref, reactive, toRefs, getCurrentInstance } from 'vue'
-import Editor from "@/components/Editor/index.vue"
 import Pagination from "@/components/Pagination/index.vue"
 import RightToolbar from "@/components/RightToolbar/index.vue"
 import DictTag from "@/components/DictTag/index.vue"
 import { parseTime } from "@/utils/ruoyi"
 
 const { proxy } = getCurrentInstance()
-const { dansjd, tsjb, afds, sfnm } = proxy.useDict('dansjd', 'tsjb', 'afds', 'sfnm')
+const { dansjd, tsjb, afds } = proxy.useDict('dansjd', 'tsjb', 'afds')
 
-const ComplaintReportList = ref([])
+const complaintList = ref([])
 const open = ref(false)
 const loading = ref(true)
 const showSearch = ref(true)
 const ids = ref([])
-const single = ref(true)
-const multiple = ref(true)
 const total = ref(0)
 const title = ref("")
 
 const data = reactive({
-  form: {},
+  form: {
+    complaintId: null,
+    complaintContent: null,
+    handleStatus: null,
+    handleUserId: null,
+    handleTime: null,
+    handleRemark: null
+  },
   queryParams: {
     pageNum: 1,
     pageSize: 10,
+    complaintId: null,
     reportUserId: null,
-    targetType: null,
-    targetId: null,
-    complaintType: null,
-    complaintContent: null,
-    evidenceUrl: null,
-    isAnonymous: null,
     handleStatus: null,
-    handleUserId: null,
-    handleRemark: null,
-    handleTime: null,
-    isDeleted: null
+    handleUserId: null
   },
   rules: {
-    reportUserId: [
-      { required: true, message: "举报人ID不能为空", trigger: "blur" }
+    handleStatus: [
+      { required: true, message: "处理状态不能为空", trigger: "change" }
     ],
-    targetType: [
-      { required: true, message: "举报对象类型不能为空", trigger: "change" }
+    handleUserId: [
+      { required: true, message: "处理人ID不能为空", trigger: "blur" }
     ],
-    targetId: [
-      { required: true, message: "举报对象ID不能为空", trigger: "blur" }
+    handleTime: [
+      { required: true, message: "处理时间不能为空", trigger: "blur" }
     ],
-    complaintType: [
-      { required: true, message: "投诉类型不能为空", trigger: "change" }
-    ],
-    complaintContent: [
-      { required: true, message: "投诉内容不能为空", trigger: "blur" }
+    handleRemark: [
+      { required: true, message: "处理结果不能为空", trigger: "blur" }
     ]
   }
 })
@@ -401,7 +257,7 @@ const { queryParams, form, rules } = toRefs(data)
 function getList() {
   loading.value = true
   listComplaintReport(queryParams.value).then(response => {
-    ComplaintReportList.value = response.rows
+    complaintList.value = response.rows
     total.value = response.total
     loading.value = false
   })
@@ -415,22 +271,13 @@ function cancel() {
 function reset() {
   form.value = {
     complaintId: null,
-    reportUserId: null,
-    targetType: null,
-    targetId: null,
-    complaintType: null,
     complaintContent: null,
-    evidenceUrl: null,
-    isAnonymous: null,
     handleStatus: null,
     handleUserId: null,
-    handleRemark: null,
     handleTime: null,
-    createTime: null,
-    updateTime: null,
-    isDeleted: null
+    handleRemark: null
   }
-  proxy.resetForm("ComplaintReportRef")
+  proxy.resetForm("formRef")
 }
 
 function handleQuery() {
@@ -445,60 +292,34 @@ function resetQuery() {
 
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.complaintId)
-  single.value = selection.length != 1
-  multiple.value = !selection.length
 }
 
-function handleAdd() {
+function handleProcess(row) {
   reset()
-  open.value = true
-  title.value = "添加投诉举报"
-}
-
-function handleUpdate(row) {
-  reset()
-  const _complaintId = row.complaintId || ids.value
-  getComplaintReport(_complaintId).then(response => {
-    form.value = response.data
+  getComplaintReport(row.complaintId).then(response => {
+    form.value = {
+      complaintId: response.data.complaintId,
+      complaintContent: response.data.complaintContent,
+      handleStatus: response.data.handleStatus,
+      handleUserId: response.data.handleUserId,
+      handleTime: response.data.handleTime,
+      handleRemark: response.data.handleRemark
+    }
     open.value = true
-    title.value = "修改投诉举报"
+    title.value = "处理投诉举报"
   })
 }
 
 function submitForm() {
-  proxy.$refs["ComplaintReportRef"].validate(valid => {
+  proxy.$refs["formRef"].validate(valid => {
     if (valid) {
-      if (form.value.complaintId != null) {
-        updateComplaintReport(form.value).then(response => {
-          proxy.$modal.msgSuccess("修改成功")
-          open.value = false
-          getList()
-        })
-      } else {
-        addComplaintReport(form.value).then(response => {
-          proxy.$modal.msgSuccess("新增成功")
-          open.value = false
-          getList()
-        })
-      }
+      updateComplaintReport(form.value).then(response => {
+        proxy.$modal.msgSuccess("处理成功")
+        open.value = false
+        getList()
+      })
     }
   })
-}
-
-function handleDelete(row) {
-  const _complaintIds = row.complaintId || ids.value
-  proxy.$modal.confirm('是否确认删除投诉举报编号为"' + _complaintIds + '"的数据项？').then(function() {
-    return delComplaintReport(_complaintIds)
-  }).then(() => {
-    getList()
-    proxy.$modal.msgSuccess("删除成功")
-  }).catch(() => {})
-}
-
-function handleExport() {
-  proxy.download('ComplaintReport/ComplaintReport/export', {
-    ...queryParams.value
-  }, `ComplaintReport_${new Date().getTime()}.xlsx`)
 }
 
 function getTargetTypeColor(type) {
@@ -533,7 +354,7 @@ getList()
 </script>
 
 <style scoped lang="scss">
-.complaint-page {
+.complaint-handle-page {
   padding: 24px;
   min-height: calc(100vh - 84px);
   background: linear-gradient(135deg, #0a0e27 0%, #111936 100%);
@@ -751,45 +572,6 @@ getList()
       box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
     }
   }
-  
-  &.tech-btn-success {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    border: none;
-    color: #fff;
-    
-    &:hover {
-      background: linear-gradient(135deg, #0ea58e 0%, #047857 100%);
-      color: #fff;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
-    }
-  }
-  
-  &.tech-btn-danger {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-    border: none;
-    color: #fff;
-    
-    &:hover {
-      background: linear-gradient(135deg, #e04444 0%, #c92626 100%);
-      color: #fff;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
-    }
-  }
-  
-  &.tech-btn-warning {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    border: none;
-    color: #fff;
-    
-    &:hover {
-      background: linear-gradient(135deg, #e0940b 0%, #c76d06 100%);
-      color: #fff;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
-    }
-  }
 }
 
 .tech-table {
@@ -966,23 +748,6 @@ getList()
     
     &.selected {
       font-weight: 600;
-    }
-  }
-}
-
-:deep(.el-radio-group) {
-  .el-radio {
-    color: #94a3b8;
-    
-    .el-radio__input.is-checked .el-radio__inner {
-      background-color: #00d4ff;
-      border-color: #00d4ff;
-      box-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
-    }
-    
-    .el-radio__label {
-      color: #e2e8f0;
-      font-weight: 500;
     }
   }
 }

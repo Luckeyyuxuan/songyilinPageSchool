@@ -41,3 +41,21 @@ export function cancelDonation(id) {
     method: 'put'
   })
 }
+
+// 批量确认捐赠
+export function batchConfirmDonation(data) {
+  return request({
+    url: '/donation/application/admin/batch-confirm',
+    method: 'post',
+    data
+  })
+}
+
+// 批量取消捐赠
+export function batchCancelDonation(data) {
+  return request({
+    url: '/donation/application/admin/batch-cancel',
+    method: 'post',
+    data
+  })
+}

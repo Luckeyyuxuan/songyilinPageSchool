@@ -58,7 +58,7 @@
             </el-option>
             <el-option label="宠物趣事" value="fun">
               <el-icon class="option-icon">
-                <Smile />
+                <ChatRound />
               </el-icon>
               宠物趣事
             </el-option>
@@ -207,7 +207,7 @@ import {
   UserFilled,
   Clock,
   QuestionFilled,
-  Smile,
+  ChatRound,
   More
 } from '@element-plus/icons-vue'
 
@@ -228,7 +228,7 @@ const categories = [
   { value: '', label: '全部', icon: 'Collection' },
   { value: 'experience', label: '养宠经验', icon: 'Star' },
   { value: 'help', label: '问题求助', icon: 'QuestionFilled' },
-  { value: 'fun', label: '宠物趣事', icon: 'Smile' },
+  { value: 'fun', label: '宠物趣事', icon: 'ChatRound' },
   { value: 'other', label: '其他', icon: 'More' }
 ]
 
@@ -246,7 +246,7 @@ const getCategoryIcon = (category) => {
   switch (category) {
     case 'experience': return 'Star'
     case 'help': return 'QuestionFilled'
-    case 'fun': return 'Smile'
+    case 'fun': return 'ChatRound'
     case 'other': return 'More'
     default: return 'Document'
   }

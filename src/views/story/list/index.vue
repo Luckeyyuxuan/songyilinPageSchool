@@ -82,7 +82,7 @@
         
         <div class="story-content">
           <h3 class="story-title">{{ story.title }}</h3>
-          <p class="story-excerpt">{{ story.content.substring(0, 80) }}...</p>
+          <p class="story-excerpt">{{ removeHtmlTags(story.content).substring(0, 80) }}...</p>
           
           <div class="story-meta">
             <div class="author-info">
@@ -180,6 +180,11 @@ const formatTime = (time) => {
     month: 'short',
     day: 'numeric'
   })
+}
+
+const removeHtmlTags = (html) => {
+  if (!html) return ''
+  return html.replace(/<[^>]*>/g, '')
 }
 
 const loadData = async () => {

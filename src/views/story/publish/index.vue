@@ -119,4 +119,12 @@ const resetForm = () => {
 .upload-demo {
   margin-bottom: 10px;
 }
+
+:deep(.el-form-item__content) {
+  width: 100%;
+}
+
+:deep(.el-input) {
+  width: 100%;
+}
 </style>

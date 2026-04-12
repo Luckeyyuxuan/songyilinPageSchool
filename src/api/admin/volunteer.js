@@ -17,6 +17,14 @@ export function getVolunteerDetail(id) {
   })
 }
 
+// 获取志愿者详情（用于编辑和查看页面）
+export function getVolunteerById(id) {
+  return request({
+    url: `/admin/volunteer/${id}`,
+    method: 'get'
+  })
+}
+
 // 审核志愿者
 export function approveVolunteer(id, data) {
   return request({
@@ -36,9 +44,9 @@ export function addVolunteer(data) {
 }
 
 // 更新志愿者信息
-export function updateVolunteer(id, data) {
+export function updateVolunteer(data) {
   return request({
-    url: `/admin/volunteer/${id}`,
+    url: `/admin/volunteer/${data.id}`,
     method: 'put',
     data
   })

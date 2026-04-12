@@ -2,7 +2,7 @@
   <div class="upload-file">
     <el-upload
       multiple
-      :action="uploadFileUrl"
+      :http-request="handleHttpRequest"
       :before-upload="handleBeforeUpload"
       :file-list="fileList"
       :limit="limit"
@@ -40,6 +40,7 @@
 
 <script setup>
 import { getToken } from "@/utils/auth";
+import request from "@/utils/request";
 
 const props = defineProps({
   modelValue: [String, Object, Array],
@@ -53,10 +54,10 @@ const props = defineProps({
     type: Number,
     default: 5,
   },
-  // 文件类型, 例如['png', 'jpg', 'jpeg']
+  // 文件类型, 例如['png', 'jpg', 'jpeg', 'mp4', 'doc', 'xls', 'ppt', 'txt', 'pdf']
   fileType: {
     type: Array,
-    default: () => ["doc", "xls", "ppt", "txt", "pdf"],
+    default: () => ["png", "jpg", "jpeg", "mp4", "doc", "xls", "ppt", "txt", "pdf"],
   },
   // 是否显示提示
   isShowTip: {
@@ -70,7 +71,6 @@ const emit = defineEmits();
 const number = ref(0);
 const uploadList = ref([]);
 const baseUrl = import.meta.env.VITE_APP_BASE_API;
-const uploadFileUrl = ref(import.meta.env.VITE_APP_BASE_API + "/common/upload"); // 上传文件服务器地址
 const headers = ref({ Authorization: "Bearer " + getToken() });
 const fileList = ref([]);
 const showTip = computed(
@@ -160,6 +160,31 @@ function uploadedSuccessfully() {
     emit("update:modelValue", listToString(fileList.value));
     proxy.$modal.closeLoading();
   }
+}
+
+// 自定义上传方法
+function handleHttpRequest(options) {
+  const { file, onSuccess, onError } = options;
+  const formData = new FormData();
+  formData.append('file', file);
+  
+  request({
+    url: '/common/upload',
+    method: 'post',
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      'Authorization': 'Bearer ' + getToken()
+    }
+  }).then(res => {
+    if (res.code === 200) {
+      onSuccess(res);
+    } else {
+      onError(res);
+    }
+  }).catch(error => {
+    onError(error);
+  });
 }
 
 // 获取文件名称
