@@ -102,8 +102,8 @@ export const constantRoutes = [
         name: 'AdoptionApplication',
         meta: { title: '提交申请' }
       },
-      {
-        path: 'detail/:id',
+      { 
+        path: 'detail/:applicationId',
         component: () => import('@/views/adoption/detail/index.vue'),
         name: 'AdoptionDetail',
         hidden: true,
@@ -130,7 +130,7 @@ export const constantRoutes = [
         meta: { title: '提交捐赠' }
       },
       {
-        path: 'detail/:id',
+        path: 'detail/:donationId',
         component: () => import('@/views/donation/detail/index.vue'),
         name: 'DonationDetail',
         hidden: true,
@@ -157,7 +157,7 @@ export const constantRoutes = [
         meta: { title: '发布故事' }
       },
       {
-        path: 'detail/:id',
+        path: 'detail/:storyId',
         component: () => import('@/views/story/detail/index.vue'),
         name: 'StoryDetail',
         hidden: true,
@@ -184,7 +184,7 @@ export const constantRoutes = [
         meta: { title: '发布帖子' }
       },
       {
-        path: 'post/detail/:id',
+        path: 'post/detail/:postId',
         component: () => import('@/views/community/post/detail/index.vue'),
         name: 'PostDetail',
         hidden: true,
@@ -192,83 +192,26 @@ export const constantRoutes = [
       }
     ]
   },
-  // 管理员端模块
+
+  // 知识课堂
   {
-    path: '/admin',
+    path: '/course',
+    component: () => import('@/views/course/course/index.vue'),
+    name: 'CourseList',
+    meta: { title: '知识课堂', icon: 'education' }
+  },
+  // AI 智能问答模块
+  {
+    path: '/ai',
     component: Layout,
-    meta: { title: '管理员管理', icon: 'system' },
+    hidden: true,
+    meta: { title: 'AI 智能问答', icon: 'question' },
     children: [
       {
-        path: 'volunteer',
-        component: () => import('@/views/admin/volunteer/index.vue'),
-        name: 'VolunteerList',
-        meta: { title: '志愿者管理' }
-      },
-      {
-        path: 'volunteer/add',
-        component: () => import('@/views/admin/volunteer/add.vue'),
-        name: 'VolunteerAdd',
-        hidden: true,
-        meta: { title: '添加志愿者', activeMenu: '/admin/volunteer' }
-      },
-      {
-        path: 'volunteer/edit/:id',
-        component: () => import('@/views/admin/volunteer/edit.vue'),
-        name: 'VolunteerEdit',
-        hidden: true,
-        meta: { title: '编辑志愿者', activeMenu: '/admin/volunteer' }
-      },
-      {
-        path: 'volunteer/detail/:id',
-        component: () => import('@/views/admin/volunteer/detail.vue'),
-        name: 'VolunteerDetail',
-        hidden: true,
-        meta: { title: '志愿者详情', activeMenu: '/admin/volunteer' }
-      },
-      {
-        path: 'organization',
-        component: () => import('@/views/admin/organization/index.vue'),
-        name: 'OrganizationList',
-        meta: { title: '合作机构管理' }
-      },
-      {
-        path: 'organization/add',
-        component: () => import('@/views/admin/organization/add.vue'),
-        name: 'OrganizationAdd',
-        hidden: true,
-        meta: { title: '添加合作机构', activeMenu: '/admin/organization' }
-      },
-      {
-        path: 'organization/edit/:id',
-        component: () => import('@/views/admin/organization/edit.vue'),
-        name: 'OrganizationEdit',
-        hidden: true,
-        meta: { title: '编辑合作机构', activeMenu: '/admin/organization' }
-      },
-      {
-        path: 'organization/detail/:id',
-        component: () => import('@/views/admin/organization/detail.vue'),
-        name: 'OrganizationDetail',
-        hidden: true,
-        meta: { title: '合作机构详情', activeMenu: '/admin/organization' }
-      },
-      {
-        path: 'adoption-approval',
-        component: () => import('@/views/adoption/admin/approval.vue'),
-        name: 'AdoptionApproval',
-        meta: { title: '领养申请审批' }
-      },
-      {
-        path: 'donation-approval',
-        component: () => import('@/views/donation/admin/approval.vue'),
-        name: 'DonationApproval',
-        meta: { title: '捐赠申请审批' }
-      },
-      {
-        path: 'complaint-handle',
-        component: () => import('@/views/ComplaintReport/handle/index.vue'),
-        name: 'ComplaintHandle',
-        meta: { title: '投诉举报处理' }
+        path: 'chat',
+        component: () => import('@/views/ai/chat/index.vue'),
+        name: 'AIChat',
+        meta: { title: '智能问答' }
       }
     ]
   }

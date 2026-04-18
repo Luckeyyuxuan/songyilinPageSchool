@@ -173,7 +173,7 @@
           </template>
         </el-table-column>
         <el-table-column label="审核人" align="center" prop="verifyUserId" width="100" />
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150" fixed="right">
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200" fixed="right">
           <template #default="scope">
             <div class="action-btns">
               <el-button link type="primary" class="action-btn" @click="handleUpdate(scope.row)" v-hasPermi="['give:give:edit']">

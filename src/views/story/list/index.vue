@@ -51,10 +51,10 @@
     <div class="story-cards">
       <el-card
         v-for="story in tableData"
-        :key="story.id"
+        :key="story.storyId"
         shadow="hover"
         class="tech-card story-card"
-        @click="handleView(story.id)"
+        @click="handleView(story.storyId)"
       >
         <div class="story-image-wrapper">
           <el-image

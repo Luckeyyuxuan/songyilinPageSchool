@@ -217,7 +217,7 @@
             <span class="time-text">{{ parseTime(scope.row.handleTime, '{y}-{m}-{d} {h}:{i}') }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="180" fixed="right">
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="200" fixed="right">
           <template #default="scope">
             <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['ComplaintReport:ComplaintReport:edit']">修改</el-button>
             <el-button link type="danger" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['ComplaintReport:ComplaintReport:remove']">删除</el-button>

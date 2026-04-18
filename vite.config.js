@@ -35,6 +35,11 @@ export default defineConfig(({ mode, command }) => {
           // target: 'https://api.wzs.pub/mock/13',
           changeOrigin: true,
           rewrite: (p) => p.replace(/^\/dev-api/, '')
+        },
+        '/api/ai': {
+          target: 'https://open.bigmodel.cn',
+          changeOrigin: true,
+          rewrite: (p) => p.replace(/^\/api\/ai/, '/api/paas/v4')
         }
       }
     },

@@ -107,8 +107,17 @@ const rules = {
 const loadData = async () => {
   try {
     const id = route.params.id
+    if (!id) {
+      ElMessage.error('缺少机构ID参数')
+      router.push('/admin/organization')
+      return
+    }
     const response = await getOrganizationById(id)
     Object.assign(form, response.data)
+    // 确保 form.id 被正确设置
+    if (!form.id) {
+      form.id = id
+    }
   } catch (error) {
     ElMessage.error('获取数据失败')
   }
@@ -116,6 +125,11 @@ const loadData = async () => {
 
 const handleSubmit = async () => {
   if (!formRef.value) return
+  // 检查 ID 是否存在
+  if (!form.id) {
+    ElMessage.error('缺少机构ID参数')
+    return
+  }
   await formRef.value.validate(async (valid) => {
     if (valid) {
       try {

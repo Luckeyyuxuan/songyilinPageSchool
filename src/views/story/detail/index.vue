@@ -17,8 +17,10 @@
         <el-image
           v-if="story.coverImage"
           :src="story.coverImage"
-          fit="cover"
+          fit="contain"
           class="story-cover"
+          preview-src-list="[story.coverImage]"
+          :preview-teleported="true"
         />
         <div class="story-body" v-html="story.content"></div>
         <div class="story-actions">
@@ -102,8 +104,15 @@ const commentRules = {
 
 const loadStoryDetail = async () => {
   try {
-    const response = await getStoryDetail(route.params.id)
-    story.value = response
+    console.log('Route params:', route.params)
+    console.log('Story ID:', route.params.storyId)
+    if (!route.params.storyId) {
+      ElMessage.error('缺少故事ID参数')
+      return
+    }
+    const response = await getStoryDetail(route.params.storyId)
+    console.log('API response:', response)
+    story.value = response.data || response
   } catch (error) {
     ElMessage.error('获取故事详情失败')
   }
@@ -111,12 +120,18 @@ const loadStoryDetail = async () => {
 
 const loadComments = async () => {
   try {
-    const response = await getStoryComments(route.params.id, {
+    if (!route.params.storyId) {
+      ElMessage.error('缺少故事ID参数')
+      return
+    }
+    const response = await getStoryComments(route.params.storyId, {
       pageNum: commentPagination.current,
       pageSize: commentPagination.size
     })
-    comments.value = response.rows
-    commentPagination.total = response.total
+    console.log('Comments response:', response)
+    const data = response.data || response
+    comments.value = data.rows || []
+    commentPagination.total = data.total || 0
   } catch (error) {
     ElMessage.error('获取评论失败')
   }
@@ -124,7 +139,11 @@ const loadComments = async () => {
 
 const handleLike = async () => {
   try {
-    await likeStory(route.params.id)
+    if (!route.params.storyId) {
+      ElMessage.error('缺少故事ID参数')
+      return
+    }
+    await likeStory(route.params.storyId)
     isLiked.value = !isLiked.value
     story.value.likeCount = (story.value.likeCount || 0) + (isLiked.value ? 1 : -1)
     ElMessage.success(isLiked.value ? '点赞成功' : '取消点赞成功')
@@ -138,7 +157,11 @@ const submitComment = async () => {
   await commentFormRef.value.validate(async (valid) => {
     if (valid) {
       try {
-        await commentStory(route.params.id, commentForm)
+        if (!route.params.storyId) {
+          ElMessage.error('缺少故事ID参数')
+          return
+        }
+        await commentStory(route.params.storyId, commentForm)
         ElMessage.success('评论成功')
         showCommentInput.value = false
         commentForm.content = ''
@@ -199,8 +222,14 @@ onMounted(() => {
 
 .story-cover {
   width: 100%;
-  max-height: 400px;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
   margin-bottom: 20px;
+  background-color: #f5f5f5;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .story-body {

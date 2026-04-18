@@ -1,8 +1,21 @@
 <template>
   <div class="course-page tech-page tech-grid-bg">
     <div class="tech-title">
-      <span class="tech-gradient-text">知识课堂管理</span>
-      <span class="tech-subtitle">管理宠物知识课程、学习资料及发布内容</span>
+      <span class="tech-gradient-text">知识课堂</span>
+      <span class="tech-subtitle">宠物知识学习与智能问答</span>
+    </div>
+
+    <div class="quick-entry-cards">
+      <div class="entry-card ai-assistant-card" @click="goToAIChat">
+        <div class="entry-icon">🐾</div>
+        <div class="entry-content">
+          <h4>宠物智能助手</h4>
+          <p>AI智能问答，解答您的养宠疑惑</p>
+        </div>
+        <div class="entry-arrow">
+          <el-icon><ArrowRight /></el-icon>
+        </div>
+      </div>
     </div>
 
     <el-card shadow="hover" class="tech-card search-card">
@@ -301,6 +314,13 @@
 
 <script setup name="Course">
 import { listCourse, getCourse, delCourse, addCourse, updateCourse } from "@/api/course/course"
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const goToAIChat = () => {
+  router.push('/ai/chat')
+}
 
 const { proxy } = getCurrentInstance()
 const { tyepse, courese, ljsc } = proxy.useDict('tyepse', 'courese', 'ljsc')
@@ -501,6 +521,81 @@ getList()
     font-size: 14px;
     color: #64748b;
     font-weight: 400;
+  }
+}
+
+.quick-entry-cards {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.entry-card {
+  display: flex;
+  align-items: center;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #ff9a56 0%, #ff6b95 100%);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(255, 107, 149, 0.3);
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(255, 107, 149, 0.4);
+  }
+}
+
+.ai-assistant-card {
+  flex: 1;
+}
+
+.entry-icon {
+  width: 56px;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin-right: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.entry-content {
+  flex: 1;
+  
+  h4 {
+    margin: 0 0 6px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+.entry-arrow {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 18px;
+  transition: all 0.3s ease;
+  
+  .entry-card:hover & {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(4px);
   }
 }
 

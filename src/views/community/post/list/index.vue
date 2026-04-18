@@ -104,7 +104,7 @@
 
     <!-- 帖子卡片列表 -->
     <div class="post-cards">
-      <el-card v-for="post in tableData" :key="post.id" shadow="hover" class="tech-card post-card" @click="handleView(post.id)">
+      <el-card v-for="post in tableData" :key="post.postId" shadow="hover" class="tech-card post-card" @click="handleView(post.postId)">
         <div class="post-header">
           <div class="post-category-tag" :class="post.category">
             <el-icon>
@@ -116,7 +116,7 @@
         </div>
 
         <div class="post-content">
-          <p class="post-excerpt">{{ post.content.substring(0, 100) }}...</p>
+          <p class="post-excerpt">{{ removeHtmlTags(post.content).substring(0, 100) }}...</p>
         </div>
 
         <div class="post-footer">
@@ -265,6 +265,11 @@ const formatTime = (time) => {
     month: 'short',
     day: 'numeric'
   })
+}
+
+const removeHtmlTags = (html) => {
+  if (!html) return ''
+  return html.replace(/<[^>]*>/g, '')
 }
 
 const loadData = async () => {
