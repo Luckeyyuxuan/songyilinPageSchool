@@ -9,7 +9,7 @@
       </template>
       
       <el-descriptions :column="1" border>
-        <el-descriptions-item label="捐赠编号">{{ detail.id }}</el-descriptions-item>
+        <el-descriptions-item label="捐赠编号">{{ detail.donationId }}</el-descriptions-item>
         <el-descriptions-item label="捐赠人">{{ detail.donorName }}</el-descriptions-item>
         <el-descriptions-item label="联系电话">{{ detail.contactPhone }}</el-descriptions-item>
         <el-descriptions-item label="捐赠类型">{{ getDonationTypeText(detail.donationType) }}</el-descriptions-item>
@@ -22,13 +22,13 @@
         </el-descriptions-item>
         <el-descriptions-item label="捐赠时间">{{ detail.donationTime }}</el-descriptions-item>
         <el-descriptions-item label="状态">
-          <el-tag :type="getStatusType(detail.status)">{{ getStatusText(detail.status) }}</el-tag>
+          <el-tag :type="getStatusType(detail.donationStatus)">{{ getStatusText(detail.donationStatus) }}</el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="备注">{{ detail.remarks || '暂无' }}</el-descriptions-item>
       </el-descriptions>
       
       <el-divider content-position="left">捐赠物品</el-divider>
-      <el-table :data="detail.items" style="width: 100%">
+      <el-table :data="detail.items || []" style="width: 100%">
         <el-table-column prop="name" label="物品名称" width="180" />
         <el-table-column prop="quantity" label="数量" width="100" />
         <el-table-column prop="unit" label="单位" width="100" />
@@ -50,18 +50,18 @@ const detail = ref({})
 
 const getStatusType = (status) => {
   switch (status) {
-    case 'pending': return 'warning'
-    case 'confirmed': return 'success'
-    case 'cancelled': return 'danger'
+    case 0: return 'warning' // 待确认
+    case 1: return 'success' // 已确认
+    case 2: return 'danger' // 已取消
     default: return ''
   }
 }
 
 const getStatusText = (status) => {
   switch (status) {
-    case 'pending': return '待确认'
-    case 'confirmed': return '已确认'
-    case 'cancelled': return '已取消'
+    case 0: return '待确认'
+    case 1: return '已确认'
+    case 2: return '已取消'
     default: return status
   }
 }
@@ -78,8 +78,15 @@ const getDonationTypeText = (type) => {
 
 const loadDetail = async () => {
   try {
-    const response = await getDonationDetail(route.params.id)
-    detail.value = response
+    console.log('Route params:', route.params)
+    console.log('Donation ID:', route.params.donationId)
+    if (!route.params.donationId) {
+      ElMessage.error('缺少捐赠ID参数')
+      return
+    }
+    const response = await getDonationDetail(route.params.donationId)
+    console.log('API response:', response)
+    detail.value = response.data || response
   } catch (error) {
     ElMessage.error('获取详情失败')
   }

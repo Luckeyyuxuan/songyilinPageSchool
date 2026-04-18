@@ -13,9 +13,11 @@
       <el-form :inline="true" :model="searchForm" class="mb-4">
         <el-form-item label="申请状态">
           <el-select v-model="searchForm.status" placeholder="请选择状态">
-            <el-option label="待审批" value="pending" />
-            <el-option label="已通过" value="approved" />
-            <el-option label="已拒绝" value="rejected" />
+            <el-option label="待审批" value="0" />
+            <el-option label="已通过" value="1" />
+            <el-option label="已拒绝" value="2" />
+            <el-option label="已领养" value="3" />
+            <el-option label="已取消" value="4" />
           </el-select>
         </el-form-item>
         <el-form-item label="申请人">
@@ -33,20 +35,24 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
-        <el-table-column prop="id" label="申请编号" width="100" />
+        <el-table-column prop="applicationId" label="申请编号" width="100" />
         <el-table-column prop="applicantName" label="申请人" width="120" />
         <el-table-column prop="contactPhone" label="联系电话" width="150" />
-        <el-table-column prop="housingType" label="住房类型" width="100" />
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column label="住房类型" width="100">
           <template #default="scope">
-            <el-tag :type="getStatusType(scope.row.status)">{{ getStatusText(scope.row.status) }}</el-tag>
+            {{ getHousingTypeText(scope.row.housingType) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="applyStatus" label="状态" width="100">
+          <template #default="scope">
+            <el-tag :type="getStatusType(scope.row.applyStatus)">{{ getStatusText(scope.row.applyStatus) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="申请时间" width="180" />
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
-            <el-button size="small" @click="handleView(scope.row.id)">查看</el-button>
-            <el-button size="small" type="primary" @click="handleApprove(scope.row.id)" v-if="scope.row.status === 'pending'">审批</el-button>
+            <el-button size="small" @click="handleView(scope.row)">查看</el-button>
+            <el-button size="small" type="primary" @click="handleApprove(scope.row)" v-if="scope.row.applyStatus === 0">审批</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -99,9 +105,6 @@
         <el-form-item label="审批意见" prop="remark">
           <el-input type="textarea" v-model="batchApproveForm.remark" placeholder="请输入审批意见" />
         </el-form-item>
-        <el-form-item label="押金金额" prop="deposit" v-if="batchApproveForm.status === 'approved'">
-          <el-input v-model="batchApproveForm.deposit" placeholder="请输入押金金额" type="number" />
-        </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
@@ -123,7 +126,7 @@ const router = useRouter()
 const tableData = ref([])
 const selectedRows = ref([])
 const searchForm = reactive({
-  status: 'pending',
+  status: '0',
   applicantName: ''
 })
 const pagination = reactive({
@@ -157,25 +160,37 @@ const batchApproveForm = reactive({
 
 const batchApproveRules = {
   status: [{ required: true, message: '请选择审批结果', trigger: 'change' }],
-  remark: [{ required: true, message: '请输入审批意见', trigger: 'blur' }],
-  deposit: [{ required: true, message: '请输入押金金额', trigger: 'blur' }, { type: 'number', min: 0, message: '押金金额必须大于等于0', trigger: 'blur' }]
+  remark: [{ required: true, message: '请输入审批意见', trigger: 'blur' }]
 }
 
 const getStatusType = (status) => {
   switch (status) {
-    case 'pending': return 'warning'
-    case 'approved': return 'success'
-    case 'rejected': return 'danger'
+    case 0: return 'warning' // 待审核
+    case 1: return 'success' // 审核通过
+    case 2: return 'danger' // 审核驳回
+    case 3: return 'info' // 已领养
+    case 4: return 'info' // 已取消
     default: return ''
   }
 }
 
 const getStatusText = (status) => {
   switch (status) {
-    case 'pending': return '待审批'
-    case 'approved': return '已通过'
-    case 'rejected': return '已拒绝'
+    case 0: return '待审核'
+    case 1: return '审核通过'
+    case 2: return '审核驳回'
+    case 3: return '已领养'
+    case 4: return '已取消'
     default: return status
+  }
+}
+
+const getHousingTypeText = (type) => {
+  switch (type) {
+    case 'owned': return '自有房'
+    case 'rented': return '租房'
+    case 'dormitory': return '宿舍'
+    default: return type
   }
 }
 
@@ -186,9 +201,11 @@ const loadData = async () => {
       pageNum: pagination.current,
       pageSize: pagination.size
     })
-    tableData.value = response.rows
-    pagination.total = response.total
+    console.log('Response:', response)
+    tableData.value = response.rows || []
+    pagination.total = response.total || 0
   } catch (error) {
+    console.error('Error:', error)
     ElMessage.error('获取数据失败')
   }
 }
@@ -199,7 +216,7 @@ const handleSearch = () => {
 }
 
 const resetSearch = () => {
-  searchForm.status = 'pending'
+  searchForm.status = '0'
   searchForm.applicantName = ''
   pagination.current = 1
   loadData()
@@ -219,16 +236,26 @@ const handleSelectionChange = (val) => {
   selectedRows.value = val
 }
 
-const handleView = (id) => {
-  router.push(`/adoption/detail/${id}`)
+const handleView = (row) => {
+  const applicationId = row.applicationId || row.id
+  if (applicationId) {
+    router.push(`/adoption/detail/${applicationId}`)
+  } else {
+    ElMessage.error('无效的申请ID')
+  }
 }
 
-const handleApprove = (id) => {
-  currentApproveId.value = id
-  approveForm.result = ''
-  approveForm.comments = ''
-  approveForm.deposit = 0
-  approveDialogVisible.value = true
+const handleApprove = (row) => {
+  const applicationId = row.applicationId || row.id
+  if (applicationId) {
+    currentApproveId.value = applicationId
+    approveForm.result = ''
+    approveForm.comments = ''
+    approveForm.deposit = 0
+    approveDialogVisible.value = true
+  } else {
+    ElMessage.error('无效的申请ID')
+  }
 }
 
 const submitApprove = async () => {
@@ -236,7 +263,12 @@ const submitApprove = async () => {
   await approveFormRef.value.validate(async (valid) => {
     if (valid) {
       try {
-        await approveAdoption(currentApproveId.value, approveForm)
+        // 构建正确的请求参数
+        const approvalData = {
+          status: approveForm.result, // 转换为 approved 或 rejected
+          remark: approveForm.comments
+        }
+        await approveAdoption(currentApproveId.value, approvalData)
         ElMessage.success('审批成功')
         approveDialogVisible.value = false
         loadData()
@@ -260,12 +292,11 @@ const submitBatchApprove = async () => {
   await batchApproveFormRef.value.validate(async (valid) => {
     if (valid) {
       try {
-        const ids = selectedRows.value.map(row => row.id)
+        const ids = selectedRows.value.map(row => row.applicationId || row.id)
         await batchApproveAdoption({
           ids,
           status: batchApproveForm.status,
-          remark: batchApproveForm.remark,
-          deposit: batchApproveForm.deposit
+          remark: batchApproveForm.remark
         })
         ElMessage.success('批量审批成功')
         batchApproveDialogVisible.value = false

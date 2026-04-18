@@ -11,9 +11,11 @@
       <el-form :inline="true" :model="searchForm" class="mb-4">
         <el-form-item label="申请状态">
           <el-select v-model="searchForm.status" placeholder="请选择状态">
-            <el-option label="待审批" value="pending" />
-            <el-option label="已通过" value="approved" />
-            <el-option label="已拒绝" value="rejected" />
+            <el-option label="待审批" value="0" />
+            <el-option label="已通过" value="1" />
+            <el-option label="已拒绝" value="2" />
+            <el-option label="已领养" value="3" />
+            <el-option label="已取消" value="4" />
           </el-select>
         </el-form-item>
         <el-form-item label="申请人">
@@ -26,19 +28,23 @@
       </el-form>
       
       <el-table :data="tableData" style="width: 100%">
-        <el-table-column prop="id" label="申请编号" width="100" />
+        <el-table-column prop="applicationId" label="申请编号" width="100" />
         <el-table-column prop="applicantName" label="申请人" width="120" />
         <el-table-column prop="contactPhone" label="联系电话" width="150" />
-        <el-table-column prop="housingType" label="住房类型" width="100" />
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column label="住房类型" width="100">
           <template #default="scope">
-            <el-tag :type="getStatusType(scope.row.status)">{{ getStatusText(scope.row.status) }}</el-tag>
+            {{ getHousingTypeText(scope.row.housingType) }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="applyStatus" label="状态" width="100">
+          <template #default="scope">
+            <el-tag :type="getStatusType(scope.row.applyStatus)">{{ getStatusText(scope.row.applyStatus) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="申请时间" width="180" />
         <el-table-column label="操作" width="100" fixed="right">
           <template #default="scope">
-            <el-button size="small" @click="handleView(scope.row.id)">查看</el-button>
+            <el-button size="small" @click="handleView(scope.row)">查看</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -81,19 +87,32 @@ const pagination = reactive({
 
 const getStatusType = (status) => {
   switch (status) {
-    case 'pending': return 'warning'
-    case 'approved': return 'success'
-    case 'rejected': return 'danger'
+    case 0: return 'warning' // 待审核
+    case 1: return 'success' // 审核通过
+    case 2: return 'danger' // 审核驳回
+    case 3: return 'info' // 已领养
+    case 4: return 'info' // 已取消
     default: return ''
   }
 }
 
 const getStatusText = (status) => {
   switch (status) {
-    case 'pending': return '待审批'
-    case 'approved': return '已通过'
-    case 'rejected': return '已拒绝'
+    case 0: return '待审核'
+    case 1: return '审核通过'
+    case 2: return '审核驳回'
+    case 3: return '已领养'
+    case 4: return '已取消'
     default: return status
+  }
+}
+
+const getHousingTypeText = (type) => {
+  switch (type) {
+    case 'owned': return '自有房'
+    case 'rented': return '租房'
+    case 'dormitory': return '宿舍'
+    default: return type
   }
 }
 
@@ -104,8 +123,8 @@ const loadData = async () => {
       pageNum: pagination.current,
       pageSize: pagination.size
     })
-    tableData.value = response.rows
-    pagination.total = response.total
+    tableData.value = response.rows || []
+    pagination.total = response.total || 0
   } catch (error) {
     ElMessage.error('获取数据失败')
   }
@@ -137,8 +156,13 @@ const handleAdd = () => {
   router.push('/adoption/application')
 }
 
-const handleView = (id) => {
-  router.push(`/adoption/detail/${id}`)
+const handleView = (row) => {
+  const applicationId = row.applicationId || row.id
+  if (applicationId) {
+    router.push(`/adoption/detail/${applicationId}`)
+  } else {
+    ElMessage.error('无效的申请ID')
+  }
 }
 
 onMounted(() => {

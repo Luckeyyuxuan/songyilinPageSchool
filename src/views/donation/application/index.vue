@@ -472,9 +472,10 @@ const resetForm = () => {
     background: var(--tech-bg-card);
     
     td {
-      background: var(--tech-bg-card);
-      border-bottom: 1px solid var(--tech-border);
-    }
+        background: var(--tech-bg-card);
+        border-bottom: 1px solid var(--tech-border);
+        color: var(--tech-text-secondary);
+      }
     
     tr:hover td {
       background: var(--tech-bg-hover);

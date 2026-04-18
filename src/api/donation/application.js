@@ -21,7 +21,7 @@ export function getDonationList(params) {
 // 获取物资捐赠详情
 export function getDonationDetail(id) {
   return request({
-    url: `/donation/application/${id}`,
+    url: `/donation/application/${String(id)}`,
     method: 'get'
   })
 }
@@ -29,7 +29,7 @@ export function getDonationDetail(id) {
 // 确认收到捐赠
 export function confirmDonation(id) {
   return request({
-    url: `/donation/application/${id}/confirm`,
+    url: `/donation/application/${String(id)}/confirm`,
     method: 'put'
   })
 }
@@ -37,7 +37,7 @@ export function confirmDonation(id) {
 // 取消捐赠
 export function cancelDonation(id) {
   return request({
-    url: `/donation/application/${id}/cancel`,
+    url: `/donation/application/${String(id)}/cancel`,
     method: 'put'
   })
 }
@@ -46,7 +46,7 @@ export function cancelDonation(id) {
 export function batchConfirmDonation(data) {
   return request({
     url: '/donation/application/admin/batch-confirm',
-    method: 'post',
+    method: 'put',
     data
   })
 }
@@ -55,7 +55,7 @@ export function batchConfirmDonation(data) {
 export function batchCancelDonation(data) {
   return request({
     url: '/donation/application/admin/batch-cancel',
-    method: 'post',
+    method: 'put',
     data
   })
 }

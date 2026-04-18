@@ -111,8 +111,8 @@ const getCategoryText = (category) => {
 
 const loadPostDetail = async () => {
   try {
-    const response = await getPostDetail(route.params.id)
-    post.value = response
+    const response = await getPostDetail(route.params.postId)
+    post.value = response.data || response
   } catch (error) {
     ElMessage.error('获取帖子详情失败')
   }
@@ -120,7 +120,7 @@ const loadPostDetail = async () => {
 
 const loadComments = async () => {
   try {
-    const response = await getPostComments(route.params.id, {
+    const response = await getPostComments(route.params.postId, {
       pageNum: commentPagination.current,
       pageSize: commentPagination.size
     })
@@ -133,7 +133,7 @@ const loadComments = async () => {
 
 const handleLike = async () => {
   try {
-    await likePost(route.params.id)
+    await likePost(route.params.postId)
     isLiked.value = !isLiked.value
     post.value.likeCount = (post.value.likeCount || 0) + (isLiked.value ? 1 : -1)
     ElMessage.success(isLiked.value ? '点赞成功' : '取消点赞成功')
@@ -144,7 +144,7 @@ const handleLike = async () => {
 
 const handleCollect = async () => {
   try {
-    await collectPost(route.params.id)
+    await collectPost(route.params.postId)
     isCollected.value = !isCollected.value
     post.value.collectCount = (post.value.collectCount || 0) + (isCollected.value ? 1 : -1)
     ElMessage.success(isCollected.value ? '收藏成功' : '取消收藏成功')
@@ -158,7 +158,7 @@ const submitComment = async () => {
   await commentFormRef.value.validate(async (valid) => {
     if (valid) {
       try {
-        await commentPost(route.params.id, commentForm)
+        await commentPost(route.params.postId, commentForm)
         ElMessage.success('评论成功')
         showCommentInput.value = false
         commentForm.content = ''

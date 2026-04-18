@@ -34,29 +34,29 @@
           
           <el-form-item label="是否允许养宠" prop="petAllowed">
             <el-radio-group v-model="form.petAllowed" class="tech-radio">
-              <el-radio label="是">是</el-radio>
-              <el-radio label="否">否</el-radio>
+              <el-radio label="1">是</el-radio>
+              <el-radio label="0">否</el-radio>
             </el-radio-group>
           </el-form-item>
           
           <el-form-item label="封闭阳台/纱窗" prop="hasEnclosedBalcony">
             <el-radio-group v-model="form.hasEnclosedBalcony" class="tech-radio">
-              <el-radio label="是">是</el-radio>
-              <el-radio label="否">否</el-radio>
+              <el-radio label="1">是</el-radio>
+              <el-radio label="0">否</el-radio>
             </el-radio-group>
           </el-form-item>
           
           <el-form-item label="家庭成员同意" prop="familyAgree">
             <el-radio-group v-model="form.familyAgree" class="tech-radio">
-              <el-radio label="是">是</el-radio>
-              <el-radio label="否">否</el-radio>
+              <el-radio label="1">是</el-radio>
+              <el-radio label="0">否</el-radio>
             </el-radio-group>
           </el-form-item>
           
           <el-form-item label="有无过敏情况" prop="hasAllergy">
             <el-radio-group v-model="form.hasAllergy" class="tech-radio">
-              <el-radio label="有">有</el-radio>
-              <el-radio label="无">无</el-radio>
+              <el-radio label="1">有</el-radio>
+              <el-radio label="0">无</el-radio>
             </el-radio-group>
           </el-form-item>
         </div>
@@ -91,15 +91,15 @@
           
           <el-form-item label="了解基础开销" prop="knowBasicCost">
             <el-radio-group v-model="form.knowBasicCost" class="tech-radio">
-              <el-radio label="是">是</el-radio>
-              <el-radio label="否">否</el-radio>
+              <el-radio label="1">是</el-radio>
+              <el-radio label="0">否</el-radio>
             </el-radio-group>
           </el-form-item>
           
           <el-form-item label="承担医疗费用" prop="canAffordMedical">
             <el-radio-group v-model="form.canAffordMedical" class="tech-radio">
-              <el-radio label="是">是</el-radio>
-              <el-radio label="否">否</el-radio>
+              <el-radio label="1">是</el-radio>
+              <el-radio label="0">否</el-radio>
             </el-radio-group>
           </el-form-item>
         </div>
@@ -115,15 +115,15 @@
         <div class="form-section">
           <el-form-item label="科学喂养" prop="scientificFeeding">
             <el-radio-group v-model="form.scientificFeeding" class="tech-radio">
-              <el-radio label="是">是</el-radio>
-              <el-radio label="否">否</el-radio>
+              <el-radio label="1">是</el-radio>
+              <el-radio label="0">否</el-radio>
             </el-radio-group>
           </el-form-item>
           
           <el-form-item label="同意绝育/牵引" prop="agreeSterilization">
             <el-radio-group v-model="form.agreeSterilization" class="tech-radio">
-              <el-radio label="是">是</el-radio>
-              <el-radio label="否">否</el-radio>
+              <el-radio label="1">是</el-radio>
+              <el-radio label="0">否</el-radio>
             </el-radio-group>
           </el-form-item>
           
@@ -159,19 +159,40 @@
           
           <el-form-item label="不随意弃养" prop="noAbandon">
             <el-radio-group v-model="form.noAbandon" class="tech-radio">
-              <el-radio label="是">是</el-radio>
-              <el-radio label="否">否</el-radio>
+              <el-radio label="1">是</el-radio>
+              <el-radio label="0">否</el-radio>
             </el-radio-group>
           </el-form-item>
           
           <el-form-item label="接受回访" prop="acceptVisit">
             <el-radio-group v-model="form.acceptVisit" class="tech-radio">
-              <el-radio label="是">是</el-radio>
-              <el-radio label="否">否</el-radio>
+              <el-radio label="1">是</el-radio>
+              <el-radio label="0">否</el-radio>
             </el-radio-group>
           </el-form-item>
         </div>
         
+        <!-- 领养宠物信息 -->
+        <el-divider content-position="left" class="tech-divider">
+          <span class="divider-content">
+            <el-icon><UserFilled /></el-icon>
+            领养宠物信息
+          </span>
+        </el-divider>
+        
+        <div class="form-section">
+          <el-form-item label="选择宠物" prop="releaseId">
+            <el-select v-model="form.releaseId" placeholder="请选择要领养的宠物" class="tech-select" @change="handlePetSelect">
+              <el-option 
+                v-for="pet in petList" 
+                :key="pet.petId" 
+                :label="pet.petName" 
+                :value="pet.petId"
+              />
+            </el-select>
+          </el-form-item>
+        </div>
+
         <!-- 其他信息 -->
         <el-divider content-position="left" class="tech-divider">
           <span class="divider-content">
@@ -295,10 +316,11 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { submitAdoptionApplication, downloadAgreementTemplate } from '@/api/adoption/application'
+import { listInfo } from '@/api/pet/info'
 import { 
   Document, 
   HomeFilled, 
@@ -318,8 +340,11 @@ import {
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
+const route = useRoute()
 const formRef = ref()
 const form = reactive({
+  releaseId: '',
+  petId: '',
   housingType: '',
   petAllowed: '',
   hasEnclosedBalcony: '',
@@ -341,7 +366,41 @@ const form = reactive({
   files: []
 })
 
+const petList = ref([])
+
+const loadPetList = async () => {
+  try {
+    const response = await listInfo({ petStatus: 1 }) // 假设1表示可领养状态
+    petList.value = response.rows
+  } catch (error) {
+    ElMessage.error('获取宠物列表失败')
+  }
+}
+
+const handlePetSelect = (petId) => {
+  form.petId = petId
+  // 这里可以根据需要设置releaseId
+  // 假设petList中包含releaseId信息
+  const selectedPet = petList.value.find(pet => pet.petId === petId)
+  if (selectedPet && selectedPet.releaseId) {
+    form.releaseId = selectedPet.releaseId
+  }
+}
+
+onMounted(() => {
+  loadPetList()
+  // 从路由参数中获取releaseId
+  if (route.query.releaseId) {
+    form.releaseId = route.query.releaseId
+  }
+  if (route.query.petId) {
+    form.petId = route.query.petId
+  }
+})
+
 const rules = {
+  releaseId: [{ required: true, message: '请选择要领养的宠物', trigger: 'change' }],
+  petId: [{ required: true, message: '请选择要领养的宠物', trigger: 'change' }],
   housingType: [{ required: true, message: '请选择住房类型', trigger: 'change' }],
   petAllowed: [{ required: true, message: '请选择是否允许养宠', trigger: 'change' }],
   hasEnclosedBalcony: [{ required: true, message: '请选择是否有封闭阳台/纱窗', trigger: 'change' }],
@@ -372,7 +431,22 @@ const submitForm = async () => {
   await formRef.value.validate(async (valid) => {
     if (valid) {
       try {
-        const response = await submitAdoptionApplication(form)
+        // 确保整数类型字段是数字
+        const formData = {
+          ...form,
+          petAllowed: parseInt(form.petAllowed) || 0,
+          hasEnclosedBalcony: parseInt(form.hasEnclosedBalcony) || 0,
+          familyAgree: parseInt(form.familyAgree) || 0,
+          hasAllergy: parseInt(form.hasAllergy) || 0,
+          knowBasicCost: parseInt(form.knowBasicCost) || 0,
+          canAffordMedical: parseInt(form.canAffordMedical) || 0,
+          scientificFeeding: parseInt(form.scientificFeeding) || 0,
+          agreeSterilization: parseInt(form.agreeSterilization) || 0,
+          noAbandon: parseInt(form.noAbandon) || 0,
+          acceptVisit: parseInt(form.acceptVisit) || 0,
+          applyStatus: 0 // 默认为待审核状态
+        }
+        const response = await submitAdoptionApplication(formData)
         ElMessage.success('申请提交成功')
         router.push('/adoption/list')
       } catch (error) {

@@ -88,7 +88,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
-        <el-table-column prop="id" label="捐赠编号" width="100" />
+        <el-table-column prop="donationId" label="捐赠编号" width="100" />
         <el-table-column prop="donorName" label="捐赠人" width="120" />
         <el-table-column prop="contactPhone" label="联系电话" width="150" />
         <el-table-column prop="donationType" label="捐赠类型" width="100">
@@ -103,22 +103,22 @@
         </el-table-column>
         <el-table-column prop="donationMethod" label="捐赠方式" width="120" />
         <el-table-column prop="donationTime" label="捐赠时间" width="180" />
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="donationStatus" label="状态" width="100">
           <template #default="scope">
-            <el-tag :type="getStatusType(scope.row.status)">{{ getStatusText(scope.row.status) }}</el-tag>
+            <el-tag :type="getStatusType(scope.row.donationStatus)">{{ getStatusText(scope.row.donationStatus) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="200" fixed="right">
           <template #default="scope">
-            <el-button size="small" class="view-btn" @click="handleView(scope.row.id)">
+            <el-button size="small" class="view-btn" @click="handleView(scope.row.donationId)">
               <el-icon><View /></el-icon>
               查看
             </el-button>
-            <el-button size="small" type="success" class="confirm-btn" @click="handleConfirm(scope.row.id)" v-if="scope.row.status === 'pending'">
+            <el-button size="small" type="success" class="confirm-btn" @click="handleConfirm(scope.row.donationId)" v-if="scope.row.donationStatus === 0">
               <el-icon><Check /></el-icon>
               确认收到
             </el-button>
-            <el-button size="small" type="danger" class="cancel-btn" @click="handleCancel(scope.row.id)" v-if="scope.row.status === 'pending'">
+            <el-button size="small" type="danger" class="cancel-btn" @click="handleCancel(scope.row.donationId)" v-if="scope.row.donationStatus === 0">
               <el-icon><Close /></el-icon>
               取消
             </el-button>
@@ -224,18 +224,18 @@ const stats = reactive({
 
 const getStatusType = (status) => {
   switch (status) {
-    case 'pending': return 'warning'
-    case 'confirmed': return 'success'
-    case 'cancelled': return 'danger'
+    case 0: return 'warning' // 待确认
+    case 1: return 'success' // 已确认
+    case 2: return 'danger' // 已取消
     default: return ''
   }
 }
 
 const getStatusText = (status) => {
   switch (status) {
-    case 'pending': return '待确认'
-    case 'confirmed': return '已确认'
-    case 'cancelled': return '已取消'
+    case 0: return '待确认'
+    case 1: return '已确认'
+    case 2: return '已取消'
     default: return status
   }
 }
@@ -261,9 +261,9 @@ const getDonationTypeIcon = (type) => {
 }
 
 const updateStats = () => {
-  stats.pending = tableData.value.filter(item => item.status === 'pending').length
-  stats.confirmed = tableData.value.filter(item => item.status === 'confirmed').length
-  stats.cancelled = tableData.value.filter(item => item.status === 'cancelled').length
+  stats.pending = tableData.value.filter(item => item.donationStatus === 0).length
+  stats.confirmed = tableData.value.filter(item => item.donationStatus === 1).length
+  stats.cancelled = tableData.value.filter(item => item.donationStatus === 2).length
   stats.total = tableData.value.length
 }
 
@@ -274,6 +274,10 @@ const loadData = async () => {
       pageNum: pagination.current,
       pageSize: pagination.size
     })
+    console.log('API response:', response)
+    if (response.rows && response.rows.length > 0) {
+      console.log('First row data:', response.rows[0])
+    }
     tableData.value = response.rows
     pagination.total = response.total
     updateStats()
@@ -336,7 +340,7 @@ const handleCancel = async (id) => {
 const handleBatchConfirm = async () => {
   if (!selectedRows.value.length) return
   try {
-    const ids = selectedRows.value.map(row => row.id)
+    const ids = selectedRows.value.map(row => row.donationId)
     await batchConfirmDonation({ ids })
     ElMessage.success('批量确认成功')
     loadData()
@@ -348,7 +352,7 @@ const handleBatchConfirm = async () => {
 const handleBatchCancel = async () => {
   if (!selectedRows.value.length) return
   try {
-    const ids = selectedRows.value.map(row => row.id)
+    const ids = selectedRows.value.map(row => row.donationId)
     await batchCancelDonation({ ids })
     ElMessage.success('批量取消成功')
     loadData()
@@ -495,9 +499,10 @@ onMounted(() => {
     background: var(--tech-bg-card);
 
     td {
-      background: var(--tech-bg-card);
-      border-bottom: 1px solid var(--tech-border);
-    }
+        background: var(--tech-bg-card);
+        border-bottom: 1px solid var(--tech-border);
+        color: var(--tech-text-secondary);
+      }
 
     tr:hover td {
       background: var(--tech-bg-hover);
